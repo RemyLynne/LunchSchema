@@ -1,0 +1,26 @@
+name: Feature request
+description: Suggest a feature
+labels:
+  - Kind/Feature
+
+body:
+  - type: markdown
+    attributes:
+      value: Thanks for sharing you idea! Please provide as much detail as you can
+  - id: problem
+    type: textarea
+    attributes:
+      label: Problem / use-case
+      description: What problem does this feature solve? Who is it for?
+  - id: feature
+    type: textarea
+    attributes:
+      label: Proposed feature
+      description: Describe the proposed feature
+    validations:
+      required: true
+  - id: additional
+    type: textarea
+    attributes:
+      label: Additional context
+      description: Mockups, links, screenshots, or other context

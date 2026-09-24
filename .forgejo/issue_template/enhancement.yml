@@ -1,0 +1,23 @@
+name: Enhancement request
+description: Suggest an enhancement
+labels:
+  - Kind/Enhancement
+
+body:
+  - type: markdown
+    attributes:
+      value: Thanks for sharing your enhancement idea! Please provide as much detail as you can
+  - id: Enhancement
+    type: textarea
+    attributes:
+      label: Proposed enhancement
+      description: Describe the enhancement you want
+      placeholder: |
+        More space between the text and edges of the sign-in button
+    validations:
+      required: true
+  - id: additional
+    type: textarea
+    attributes:
+      label: Additional context
+      description: Mockups, links, screenshots, or other context

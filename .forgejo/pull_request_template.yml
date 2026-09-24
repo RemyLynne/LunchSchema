@@ -1,0 +1,45 @@
+name: Pull request
+description: Create a pull request for your changes
+
+body:
+  - id: description
+    type: textarea
+    attributes:
+      label: Description
+      description: Provide a brief summary of the changes, as well as relevant motivation and context
+    validations:
+      required: true
+  - id: testing
+    type: textarea
+    attributes:
+      label: Testing
+      description: Describe how others can verify that the changes work as expected
+  - id: relations
+    type: textarea
+    attributes:
+      label: Related issues
+      description: Links to related issues
+      placeholder: |
+        Fixes #123
+        bugtracker.example.com/bugs/123
+  - id: type
+    type: dropdown
+    attributes:
+      label: Type of change
+      multiple: true
+      options:
+        - Bug Fix
+        - New feature
+        - Documentation update
+  - id: checks
+    type: checkboxes
+    attributes:
+      label: Pre-merge checklist
+      options:
+        - label: My code follows the style of the project, or at least doesn't look like it was written by a drunk person
+        - label: I have perfomed a self-review of my own code
+        - label: My changes generate no new warnings
+        - label: I have ensured my code is understandable, by being both easy to read and well documented
+        - label: I have made corresponding changes to the documentation, as needed
+        - label: I have added tests that prove my fix is effective, or that it works
+        - label: New and existing tests pass locally with the new changes
