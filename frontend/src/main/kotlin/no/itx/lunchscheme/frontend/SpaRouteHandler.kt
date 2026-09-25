@@ -10,7 +10,7 @@ import org.springframework.web.servlet.ModelAndView
 import org.springframework.web.servlet.resource.NoResourceFoundException
 
 @ControllerAdvice
-@Order(Ordered.HIGHEST_PRECEDENCE) //us to handle 404's instead of HttpExceptionHandlerAdvice
+@Order(Ordered.HIGHEST_PRECEDENCE) //make us to handle 404's instead of HttpExceptionHandlerAdvice
 class SpaRouteHandler (
     private val httpExceptionHandlerAdvice: HttpExceptionHandlerAdvice
 ) {
