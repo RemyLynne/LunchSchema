@@ -19,4 +19,10 @@ export default defineConfig({
     setupFiles: "./test/setup.ts",
     include: ["tests/**/*.test.ts?(x)", "tests/**/*.spec.ts?(x)"]
   },
+  server: {
+    proxy: {
+      "/actuator": "https://localhost:8080",
+      "/api": "https://localhost:8080"
+    }
+  }
 })

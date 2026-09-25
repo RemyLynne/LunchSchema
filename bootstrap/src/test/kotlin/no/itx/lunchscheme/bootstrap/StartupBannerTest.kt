@@ -1,8 +1,8 @@
 package no.itx.lunchscheme.bootstrap
 
-import no.itx.lunchscheme.banner.Banner
-import no.itx.lunchscheme.banner.data.BannerDataBlock
-import no.itx.lunchscheme.constants.SpringPropertiesConstants
+import no.itx.lunchscheme.common.banner.Banner
+import no.itx.lunchscheme.common.banner.data.BannerDataBlock
+import no.itx.lunchscheme.common.constants.SpringPropertiesConstants
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.assertThrows
 import org.springframework.boot.ansi.AnsiOutput
@@ -35,7 +35,7 @@ class StartupBannerTest {
 
     fun build() {
         banner = sb.create(env, DummySource::class.java)
-        versionBlock = sb.createVersionEntry(env, DummySource::class.java)
+        versionBlock = sb.createVersionEntry(DummySource::class.java)
         serviceBlock = sb.createServiceEntry(env)
     }
 

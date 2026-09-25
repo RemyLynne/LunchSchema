@@ -4,11 +4,19 @@ plugins {
 rootProject.name = "root"
 
 include(
-    ":banner",
     ":bootstrap",
-    ":constants"
+
+    ":common:banner",
+    ":common:constants",
+    ":common:web",
+
+    ":frontend"
 )
 
-project(":banner").projectDir = file("../banner")
 project(":bootstrap").projectDir = file("../bootstrap")
-project(":constants").projectDir = file("../constants")
+
+project(":common:banner").projectDir = file("../common/banner")
+project(":common:constants").projectDir = file("../common/constants")
+project(":common:web").projectDir = file("../common/web")
+
+project(":frontend").projectDir = file("../frontend")

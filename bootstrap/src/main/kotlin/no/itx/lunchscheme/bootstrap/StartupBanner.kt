@@ -1,9 +1,9 @@
 package no.itx.lunchscheme.bootstrap
 
-import no.itx.lunchscheme.banner.Banner
-import no.itx.lunchscheme.banner.data.BannerDataBlock
-import no.itx.lunchscheme.banner.data.BannerDataEntry
-import no.itx.lunchscheme.constants.SpringPropertiesConstants
+import no.itx.lunchscheme.common.banner.Banner
+import no.itx.lunchscheme.common.banner.data.BannerDataBlock
+import no.itx.lunchscheme.common.banner.data.BannerDataEntry
+import no.itx.lunchscheme.common.constants.SpringPropertiesConstants
 import org.springframework.boot.ansi.AnsiColor
 import org.springframework.boot.ansi.AnsiOutput
 import org.springframework.boot.autoconfigure.SpringBootApplication
@@ -38,13 +38,12 @@ class StartupBanner : SpringBanner {
         title = environment.getProperty(SpringPropertiesConstants.APP_NAME),
         description = AnsiOutput.toString(AnsiColor.GREEN, poweredByLine),
         data = mutableListOf(
-            createVersionEntry(environment, sourceClass),
+            createVersionEntry(sourceClass),
             createServiceEntry(environment)
         )
     )
 
     fun createVersionEntry(
-        environment: Environment,
         sourceClass: Class<*>
     ): BannerDataBlock {
         val block = BannerDataBlock(
@@ -57,8 +56,6 @@ class StartupBanner : SpringBanner {
                 SpringBootApplication::class.java.`package`.implementationVersion
             )
         )
-
-        val name = environment.getProperty(SpringPropertiesConstants.APP_NAME)!!
 
         if (sourceClass.`package`.implementationVersion == null)
             block.entries.add(BannerDataEntry(AnsiOutput.toString(AnsiColor.YELLOW, runningUnbuilt)))
