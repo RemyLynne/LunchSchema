@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.kotlin.jvm)
+    alias(libs.plugins.kotlin.jpa)
     alias(libs.plugins.kotlin.spring)
     alias(libs.plugins.spring.boot)
     alias(libs.plugins.spring.dep.mgmt)
@@ -8,7 +9,5 @@ plugins {
 dependencies {
     implementation(libs.spring.boot.starter)
     testImplementation(libs.spring.boot.starter.test)
-    implementation(libs.spring.boot.starter.web)
-    implementation(libs.spring.boot.starter.security)
-    implementation(project(":common:i18n"))
+    implementation(libs.spring.boot.starter.data.jpa)
 }

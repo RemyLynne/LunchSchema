@@ -11,7 +11,11 @@ include(
     ":common:i18n",
     ":common:web",
 
-    ":frontend"
+    ":frontend",
+
+    ":iam",
+    ":iam:db",
+    ":iam:web"
 )
 
 project(":bootstrap").projectDir = file("../bootstrap")
@@ -23,3 +27,7 @@ project(":common:i18n").projectDir = file("../common/i18n")
 project(":common:web").projectDir = file("../common/web")
 
 project(":frontend").projectDir = file("../frontend")
+
+project(":iam").projectDir = file("../iam")
+project(":iam:db").projectDir = file("../iam/db")
+project(":iam:web").projectDir = file("../iam/web")
