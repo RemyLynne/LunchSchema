@@ -1,0 +1,7 @@
+{
+  "extends": "./tsconfig.app.json",
+  "include": ["test"],
+  "compilerOptions": {
+    "types": ["vitest", "node"]
+  }
+}
