@@ -1,5 +1,5 @@
 {
-  "name": "lunsjordning",
+  "name": "lunch-scheme",
   "version": ".1.0",
   "scripts": {
     "dev": "vite",

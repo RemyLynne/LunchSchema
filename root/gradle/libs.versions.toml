@@ -1,4 +1,6 @@
 [versions]
+gradle-git-props = "4.0.1"
+jfiglet          = "0.0.9"
 kotlin           = "2.4.20"
 mockk            = "1.14.11"
 spring-boot      = "4.1.1"
@@ -11,7 +13,11 @@ spring-boot      = { id = "org.springframework.boot",            version.ref = "
 spring-dep-mgmt  = { id = "io.spring.dependency-management",     version.ref = "spring-dep-mgmt"  }
 
 [libraries]
-junit-platform-launcher      = { group = "org.junit.platform",       name = "junit-platform-launcher"      }
-kotlin-reflect               = { group = "org.jetbrains.kotlin",     name = "kotlin-reflect"               }
-kotlin-test-junit5           = { group = "org.jetbrains.kotlin",     name = "kotlin-test-junit5"           }
-mockk                        = { group = "io.mockk",                 name = "mockk",                       version.ref = "mockk"   }
+jfiglet                  = { group = "com.github.lalyos",        name = "jfiglet",                 version.ref = "jfiglet" }
+junit-platform-launcher  = { group = "org.junit.platform",       name = "junit-platform-launcher"  }
+kotlin-reflect           = { group = "org.jetbrains.kotlin",     name = "kotlin-reflect"           }
+kotlin-test-junit5       = { group = "org.jetbrains.kotlin",     name = "kotlin-test-junit5"       }
+mockk                    = { group = "io.mockk",                 name = "mockk",                   version.ref = "mockk"   }
+spring-boot-devtools     = { group = "org.springframework.boot", name = "spring-boot-devtools"     }
+spring-boot-starter      = { group = "org.springframework.boot", name = "spring-boot-starter"      }
+spring-boot-starter-test = { group = "org.springframework.boot", name = "spring-boot-starter-test" }

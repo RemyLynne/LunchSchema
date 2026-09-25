@@ -11,7 +11,7 @@ plugins {
 }
 
 allprojects {
-    group = "no.itx.lunsjordning"
+    group = "no.itx.lunchscheme"
     version = property("rootProject.version") as String
 
     repositories {
