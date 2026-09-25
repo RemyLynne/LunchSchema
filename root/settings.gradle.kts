@@ -15,6 +15,7 @@ include(
 
 project(":bootstrap").projectDir = file("../bootstrap")
 
+project(":common").projectDir = file("../common")
 project(":common:banner").projectDir = file("../common/banner")
 project(":common:constants").projectDir = file("../common/constants")
 project(":common:web").projectDir = file("../common/web")
