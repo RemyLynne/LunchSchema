@@ -1,0 +1,24 @@
+[versions]
+jfiglet          = "0.0.9"
+kotlin           = "2.4.20"
+mockk            = "1.14.11"
+spring-boot      = "4.1.1"
+spring-dep-mgmt  = "1.1.7"
+
+[plugins]
+kotlin-jvm       = { id = "org.jetbrains.kotlin.jvm",            version.ref = "kotlin"           }
+kotlin-spring    = { id = "org.jetbrains.kotlin.plugin.spring",  version.ref = "kotlin"           }
+spring-boot      = { id = "org.springframework.boot",            version.ref = "spring-boot"      }
+spring-dep-mgmt  = { id = "io.spring.dependency-management",     version.ref = "spring-dep-mgmt"  }
+
+[libraries]
+jfiglet                      = { group = "com.github.lalyos",        name = "jfiglet",                     version.ref = "jfiglet" }
+junit-platform-launcher      = { group = "org.junit.platform",       name = "junit-platform-launcher"      }
+kotlin-reflect               = { group = "org.jetbrains.kotlin",     name = "kotlin-reflect"               }
+kotlin-test-junit5           = { group = "org.jetbrains.kotlin",     name = "kotlin-test-junit5"           }
+mockk                        = { group = "io.mockk",                 name = "mockk",                       version.ref = "mockk"   }
+spring-boot-devtools         = { group = "org.springframework.boot", name = "spring-boot-devtools"         }
+spring-boot-starter          = { group = "org.springframework.boot", name = "spring-boot-starter"          }
+spring-boot-starter-actuator = { group = "org.springframework.boot", name = "spring-boot-starter-actuator" }
+spring-boot-starter-test     = { group = "org.springframework.boot", name = "spring-boot-starter-test"     }
+spring-boot-starter-web      = { group = "org.springframework.boot", name = "spring-boot-starter-web"      }

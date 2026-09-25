@@ -1,0 +1,23 @@
+plugins {
+    id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
+}
+rootProject.name = "root"
+
+include(
+    ":bootstrap",
+
+    ":common:banner",
+    ":common:constants",
+    ":common:web",
+
+    ":frontend"
+)
+
+project(":bootstrap").projectDir = file("../bootstrap")
+
+project(":common").projectDir = file("../common")
+project(":common:banner").projectDir = file("../common/banner")
+project(":common:constants").projectDir = file("../common/constants")
+project(":common:web").projectDir = file("../common/web")
+
+project(":frontend").projectDir = file("../frontend")

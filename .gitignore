@@ -1,0 +1,6 @@
+*.iml
+.gradle
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+.kotlin

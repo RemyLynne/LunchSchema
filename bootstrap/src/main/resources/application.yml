@@ -1,0 +1,13 @@
+logging:
+  pattern:
+    console: "%d{yyyy-MM-dd'T'HH:mm:ss.SSSXXX} %clr(%level) [%thread] %clr(%logger){cyan} - %clr(%msg){%p}%n"
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+spring:
+  application:
+    name: Lunch Scheme
+  devtools:
+    add-properties: false
