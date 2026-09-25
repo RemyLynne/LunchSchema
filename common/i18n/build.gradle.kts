@@ -8,6 +8,4 @@ plugins {
 dependencies {
     implementation(libs.spring.boot.starter)
     testImplementation(libs.spring.boot.starter.test)
-    implementation(libs.spring.boot.starter.web)
-    implementation(project(":common:i18n"))
 }

@@ -13,6 +13,7 @@ dependencies {
     implementation(libs.spring.boot.starter.web)
     implementation(project(":common:banner"))
     implementation(project(":common:constants"))
+    implementation(project(":common:i18n"))
 
     implementation(project(":frontend"))
 }

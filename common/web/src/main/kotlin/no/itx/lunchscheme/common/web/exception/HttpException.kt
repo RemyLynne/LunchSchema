@@ -47,6 +47,6 @@ class HttpException : ServletException {
     }
 
     fun toLogEntry(): String {
-        return String.format("[{}:{}]: {}", httpMethod, path, httpStatus)
+        return String.format("[%s:%s]: %s", httpMethod, path, httpStatus)
     }
 }
