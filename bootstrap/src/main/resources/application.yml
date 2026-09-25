@@ -9,5 +9,30 @@ management:
 spring:
   application:
     name: Lunch Scheme
+  config:
+    import: optional:file:.env[.properties]
+  datasource:
+    hikari:
+      connection-test-query: SELECT 1
+      connection-timeout: 2500
+      idle-timeout: 300_000
+      keepalive-time: 60_000
+      leak-detection-threshold: 60000
+      max-lifetime: 1800_000
+      maximum-pool-size: 32
+      minimum-idle: 8
+      validation-timeout: 1000
+    url: jdbc:mysql://${MYSQL_HOST}:${MYSQL_PORT}/${MYSQL_DB}
+    username: ${MYSQL_USER}
+    password: ${MYSQL_PASSWD}
   devtools:
     add-properties: false
+  flyway:
+    baseline-on-migrate: true
+    baseline-version: 0
+    enabled: true
+    locations: classpath:db/migrations
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
