@@ -11,8 +11,11 @@
   "packageManager": "pnpm@12.6.0",
   "type": "module",
   "dependencies": {
+    "i18next": "^26.4.2",
+    "i18next-http-backend": "^4.0.2",
     "react": "^19.3.0",
-    "react-dom": "^19.3.0"
+    "react-dom": "^19.3.0",
+    "react-i18next": "^17.0.15"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

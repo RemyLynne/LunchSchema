@@ -1,6 +1,7 @@
 package no.itx.lunchscheme.common.web
 
 import jakarta.servlet.http.HttpServletRequest
+import no.itx.lunchscheme.common.i18n.TranslationService
 import no.itx.lunchscheme.common.web.dto.ArgumentField
 import no.itx.lunchscheme.common.web.dto.ErrorResponse
 import no.itx.lunchscheme.common.web.exception.HttpEndpointException
@@ -23,6 +24,7 @@ import org.springframework.web.servlet.resource.NoResourceFoundException
 @ControllerAdvice
 class HttpExceptionHandlerAdvice (
     private val environment: Environment,
+    private val translationService: TranslationService
 ) {
     private val log = LoggerFactory.getLogger(javaClass)
 
@@ -52,7 +54,7 @@ class HttpExceptionHandlerAdvice (
         handleHttpException(HttpException(
             e.message ?: "No resource found",
             e,
-            "Not found", //TODO: I18N
+            translationService.get("error.http.notFound"),
             e.httpMethod,
             HttpStatus.NOT_FOUND,
             e.resourcePath
@@ -63,7 +65,7 @@ class HttpExceptionHandlerAdvice (
         handleHttpException(HttpException(
             e.message ?: "Method Not Supported",
             e,
-            "Http method ${e.method} Not Supported", //TODO: I18N
+            translationService.get("error.http.methodNotAllowed"),
             HttpMethod.valueOf(e.method),
             HttpStatus.METHOD_NOT_ALLOWED,
             request.requestURI
@@ -74,7 +76,7 @@ class HttpExceptionHandlerAdvice (
         handleHttpException(HttpException(
             e.message ?: "Request body not readable",
             e,
-            "Missing or unreadable body", //TODO: I18N
+            translationService.get("error.validation.body.missingOrUnreadable"),
             HttpMethod.valueOf(request.method),
             HttpStatus.BAD_REQUEST,
             request.requestURI
@@ -86,14 +88,14 @@ class HttpExceptionHandlerAdvice (
             ArgumentField(
                 it.field,
                 it.code,
-                it.defaultMessage ?: "Invalid" //TODO: I18N
+                it.defaultMessage ?: translationService.get("error.invalid")
             )
         }
 
         val httpException = HttpException(
             e.message,
             e,
-            "Invalid body", //TODO: I18N
+            translationService.get("error.validation.body.invalid"),
             HttpMethod.valueOf(request.method),
             HttpStatus.UNPROCESSABLE_CONTENT,
             request.requestURI
@@ -108,7 +110,7 @@ class HttpExceptionHandlerAdvice (
         handleHttpException(HttpException(
             e.message,
             e,
-            "Invalid Parameters", //TODO: I18N
+            translationService.get("error.validation.parameters.invalid"),
             HttpMethod.valueOf(request.method),
             HttpStatus.BAD_REQUEST,
             request.requestURI
@@ -119,7 +121,7 @@ class HttpExceptionHandlerAdvice (
         handleHttpException(HttpException(
             e.message,
             e,
-            "Missing Parameters", //TODO: I18N
+            translationService.get("error.validation.parameters.missing"),
             HttpMethod.valueOf(request.method),
             HttpStatus.BAD_REQUEST,
             request.requestURI
@@ -130,7 +132,7 @@ class HttpExceptionHandlerAdvice (
         handleHttpException(HttpException(
             e.message ?: "Unsupported media type '${e.contentType}'",
             e,
-            "Unsupported media type '${e.contentType}'", //TODO: I18N
+            translationService.get("error.http.unsupportedContentType", e.contentType ?: "unknown"),
             HttpMethod.valueOf(request.method),
             HttpStatus.BAD_REQUEST,
             request.requestURI
@@ -141,7 +143,7 @@ class HttpExceptionHandlerAdvice (
         handleHttpException(HttpException(
             throwable.message ?: "Internal Server Error",
             throwable,
-            "Internal Server Error", //TODO: I18N
+            translationService.get("error.server.internal"),
             HttpMethod.valueOf(request.method),
             HttpStatus.INTERNAL_SERVER_ERROR,
             request.requestURI
