@@ -12,6 +12,7 @@ import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.http.converter.HttpMessageNotReadableException
+import org.springframework.security.authorization.AuthorizationDeniedException
 import org.springframework.web.HttpMediaTypeNotSupportedException
 import org.springframework.web.HttpRequestMethodNotSupportedException
 import org.springframework.web.bind.MethodArgumentNotValidException
@@ -47,6 +48,17 @@ class HttpExceptionHandlerAdvice (
             HttpMethod.valueOf(request.method),
             e.httpStatus,
             request.requestURI,
+        ))
+
+    @ExceptionHandler(AuthorizationDeniedException::class)
+    fun handleAuthorizationDeniedException(e: AuthorizationDeniedException, request: HttpServletRequest) =
+        handleHttpException(HttpException(
+            e.message ?: "Unauthorized",
+            e,
+            translationService.get("error.unauthorized"),
+            HttpMethod.valueOf(request.method),
+            HttpStatus.UNAUTHORIZED,
+            request.requestURI
         ))
 
     @ExceptionHandler(NoResourceFoundException::class)

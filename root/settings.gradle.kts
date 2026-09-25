@@ -14,7 +14,8 @@ include(
     ":frontend",
 
     ":iam",
-    ":iam:db"
+    ":iam:db",
+    ":iam:web"
 )
 
 project(":bootstrap").projectDir = file("../bootstrap")
@@ -29,3 +30,4 @@ project(":frontend").projectDir = file("../frontend")
 
 project(":iam").projectDir = file("../iam")
 project(":iam:db").projectDir = file("../iam/db")
+project(":iam:web").projectDir = file("../iam/web")

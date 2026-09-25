@@ -36,3 +36,13 @@ spring:
     hibernate:
       ddl-auto: validate
     open-in-view: false
+
+---
+
+logging:
+  level:
+    no.itx.lunchscheme: trace
+spring:
+  config:
+    activate:
+      on-profile: debug

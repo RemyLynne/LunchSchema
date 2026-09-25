@@ -8,7 +8,6 @@ import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.JoinColumn
-import jakarta.persistence.ManyToOne
 import jakarta.persistence.OneToOne
 import jakarta.persistence.Table
 import java.time.Instant
@@ -18,9 +17,7 @@ import java.time.Instant
 class AuthLog(
     @OneToOne
     @JoinColumn(name = "user_id", updatable = false)
-    var user: User,
-    @Column(name = "occurred_at", nullable = false, updatable = false)
-    var occurredAt: Instant,
+    var user: User?,
     @Column(updatable = false)
     var ip: String?,
     @Column(name = "user_agent", updatable = false)
@@ -32,24 +29,21 @@ class AuthLog(
     @Column(nullable = false, updatable = false)
     var result: AuthLogResult,
     @Column(updatable = false)
-    var reason: String?,
-    @ManyToOne
-    @JoinColumn(name = "session_id", updatable = false)
-    var session: UserSession?,
+    var reason: String?
 ) {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null
         protected set
+    @Column(name = "occurred_at", nullable = false, updatable = false)
+    var occurredAt: Instant = Instant.now()
 
     enum class AuthLogAction {
-        SUCCESS,
-        FAILURE
+        LOGIN,
     }
 
     enum class AuthLogResult {
-        LOGIN,
-        LOGOUT,
-        TOKEN_REFRESH
+        SUCCESS,
+        FAILURE
     }
 }

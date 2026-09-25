@@ -24,6 +24,7 @@ dependencies {
     implementation(project(":common:i18n"))
 
     implementation(project(":frontend"))
+    implementation(project(":iam"))
 }
 
 tasks.bootJar {
