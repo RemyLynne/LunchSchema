@@ -9,7 +9,7 @@ void i18next
   .init({
     fallbackLng: "en",
     supportedLngs: ["en", "no"],
-    ns: ["common"],
+    ns: ["common", "auth"],
     defaultNS: "common",
     backend: {
       loadPath: "/i18n/{{lng}}/{{ns}}.json"

@@ -1,0 +1,69 @@
+import {type PropsWithChildren, useCallback, useEffect, useRef, useState} from "react"
+import {type AuthState, UserContext, type UserContextValue} from "@/state/user.store"
+import {type User, userSchema} from "@/models/user"
+import {api, isApiError} from "@/lib/api"
+import {ToastManager} from "@/lib/toast"
+import {useTranslation} from "react-i18next"
+import {getAppText} from "@/lib/app-text"
+import type {TFunction} from "i18next"
+
+export default function UserProvider({children}: PropsWithChildren) {
+  const [state, setState] = useState<AuthState>({ status: "loading", user: null })
+  const request = useRef<AbortController|null>(null)
+  const { t } = useTranslation()
+
+  const setUser = useCallback((user: User | null) => {
+    setState(user ? { status: "authenticated", user } : { status: "unauthenticated", user: null })
+  }, [])
+
+  useEffect(() => {
+    request.current?.abort() //stop any ongoing requests
+
+    const controller = new AbortController()
+    request.current = controller
+    void fetchUser(t, controller.signal).then((user) => {
+      if (!controller.signal.aborted) setUser(user)
+    })
+    return () => controller.abort()
+  }, [setUser, t])
+
+  const refresh = useCallback(async () => {
+    setUser(await fetchUser(t))
+  }, [setUser, t])
+
+  const value: UserContextValue = {
+    ...state,
+    setUser,
+    refresh
+  }
+
+  return <UserContext value={value}>{children}</UserContext>
+}
+
+async function fetchUser(translator: TFunction, signal?: AbortSignal): Promise<User | null> {
+  const res = await api.get("api/account", signal)
+
+  if (res.code === 401 || res.code === 403) {
+    return null
+  }
+
+  if (isApiError(res)) {
+    if (res.error)
+      ToastManager.add({
+        type: "error",
+        title: getAppText(res.error, translator)
+      })
+    return null
+  }
+
+  const parsed = userSchema.safeParse(await res.response.json().catch(() => null))
+  if (!parsed.success) {
+    ToastManager.add({
+      type: "error",
+      title: parsed.error.message,
+    })
+    return null
+  }
+
+  return parsed.data
+}

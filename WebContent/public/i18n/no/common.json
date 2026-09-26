@@ -1,2 +1,6 @@
 {
+  "errors": {
+    "unknown": "Ukjent feil",
+    "network": "Nettverksfeil"
+  }
 }

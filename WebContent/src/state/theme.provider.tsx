@@ -3,7 +3,7 @@ import {type ResolvedTheme, type Theme, ThemeContext, type ThemeContextValue} fr
 
 const SYSTEM_QUERY = "(prefers-color-scheme: dark)"
 
-export function ThemeProvider({
+export default function ThemeProvider({
   children,
   defaultTheme = "system",
   storageKey = "ui-theme",

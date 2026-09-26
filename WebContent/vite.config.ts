@@ -2,7 +2,7 @@
 import path from "path"
 import { defineConfig } from "vite"
 import react from "@vitejs/plugin-react"
-import tailwindcss from "@tailwindcss/vite";
+import tailwindcss from "@tailwindcss/vite"
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -26,5 +26,24 @@ export default defineConfig({
       "/actuator": "http://localhost:8080",
       "/api": "http://localhost:8080"
     }
+  },
+  build: {
+    rolldownOptions: {
+      output: {
+        codeSplitting: {
+          groups: [
+            {
+              name: "react",
+              test: /node_modules[\\/]react|react-dom|react-router/
+            },
+            {
+              name: "i18n",
+              test: /node_modules[\\/]i18next|i18next-http-backend|react-i18next/
+            }
+          ]
+        }
+      }
+    },
+    assetsInlineLimit: 4096
   }
 })
