@@ -1,6 +1,10 @@
+import {ThemeProvider} from "@/state/theme.provider"
+
 export default function App() {
   return (
-    <main>
-    </main>
+    <ThemeProvider>
+      <main>
+      </main>
+    </ThemeProvider>
   )
 }
