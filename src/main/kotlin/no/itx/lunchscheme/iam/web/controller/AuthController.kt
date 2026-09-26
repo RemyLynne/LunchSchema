@@ -84,7 +84,7 @@ class AuthController(
             try {
                 val user = userRepository.findByEmail(authentication.principal as String).orElseThrow() //should not be able to throw
                 authLogService.log(AuthLog.AuthLogAction.LOGOUT, AuthLog.AuthLogResult.SUCCESS, null, ip, userAgent, user)
-            } catch (ex: NoSuchElementException) {
+            } catch (_: NoSuchElementException) {
                 log.warn("Could not find user with email: {}", authentication.principal)
             }
         }
