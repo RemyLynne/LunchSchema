@@ -19,6 +19,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.AuthenticationException
 import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.security.web.authentication.logout.CookieClearingLogoutHandler
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler
 import org.springframework.security.web.context.SecurityContextRepository
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -35,6 +37,11 @@ class AuthController(
     private val securityContextRepository: SecurityContextRepository
 ) {
     private val log = LoggerFactory.getLogger(javaClass)
+
+    private val logoutHandler = SecurityContextLogoutHandler().apply {
+        setSecurityContextRepository(securityContextRepository)
+    }
+    private val cookieClearer = CookieClearingLogoutHandler("JSESSIONID")
 
     @PostMapping("/login")
     @PreAuthorize("isAnonymous()")
@@ -82,4 +89,21 @@ class AuthController(
 
         return ResponseEntity.status(HttpStatus.OK).body(UserDto.from(user))
     }
+
+    @PostMapping("/logout")
+    fun logout(
+        authentication: Authentication?,
+        request: HttpServletRequest,
+        response: HttpServletResponse
+    ): ResponseEntity<Void> {
+        val ip = RequestUtils.ipFrom(request)
+        val userAgent = RequestUtils.userAgentFrom(request)
+
+        log.debug("Logout attempt ip={} user_agent='{}'", ip, userAgent)
+
+        logoutHandler.logout(request, response, authentication)
+        cookieClearer.logout(request, response, authentication)
+        return ResponseEntity.noContent().build()
+    }
+
 }
