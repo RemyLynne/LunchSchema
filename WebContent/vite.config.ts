@@ -23,8 +23,8 @@ export default defineConfig({
   },
   server: {
     proxy: {
-      "/actuator": "https://localhost:8080",
-      "/api": "https://localhost:8080"
+      "/actuator": "http://localhost:8080",
+      "/api": "http://localhost:8080"
     }
   }
 })
