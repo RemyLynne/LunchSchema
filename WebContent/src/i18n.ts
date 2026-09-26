@@ -21,9 +21,7 @@ void i18next
       useSuspense: true
     },
     debug: import.meta.env.DEV,
-    parseMissingKeyHandler: (key, _default, options: {ns: string, lng: string}) => {
-      if (import.meta.env.DEV)
-        console.warn("Missing translation '%s:%s' for language '%s'", options.ns, key, options.lng)
+    parseMissingKeyHandler: (key) => {
       return key
     }
   })
