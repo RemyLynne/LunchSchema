@@ -2,6 +2,7 @@ package no.itx.lunchscheme.iam.web.service
 
 import no.itx.lunchscheme.iam.db.repositories.UserCredentialRepository
 import no.itx.lunchscheme.iam.db.repositories.UserRepository
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException
 import org.springframework.security.core.userdetails.User
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
@@ -17,7 +18,7 @@ class UserDetailsServiceImpl(
         val user = userRepository.findByEmail(username)
             .orElseThrow { UsernameNotFoundException("User $username not found") }
         val credential = userCredentialRepository.findByUser(user)
-            .orElseThrow { UsernameNotFoundException("User $username cannot be logged into") }
+            .orElseThrow { AuthenticationCredentialsNotFoundException("User $username cannot be logged into") }
 
         return User
             .withUsername(user.email)

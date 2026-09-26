@@ -40,6 +40,8 @@ class AuthLog(
 
     enum class AuthLogAction {
         LOGIN,
+        REGISTER,
+        LOGOUT
     }
 
     enum class AuthLogResult {

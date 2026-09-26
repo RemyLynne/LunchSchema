@@ -17,30 +17,6 @@ class TranslationService (
     private val log = LoggerFactory.getLogger(javaClass)
 
     /**
-     * Convenience overload of [get] that uses the current locale and the key
-     * itself as the fallback value.
-     */
-    fun get(key: String, vararg args: Any): String {
-        return get(key, key, *args)
-    }
-
-    /**
-     * Convenience overload of [get] that uses the key itself as the fallback value.
-     */
-    fun get(key: String, locale: Locale, vararg args: Any): String {
-        return get(key, key, locale, *args)
-    }
-
-    /**
-     * Convenience overload of [get] that uses the current locale from
-     * [LocaleContextHolder].
-     */
-    fun get(key: String, fallback: String, vararg args: Any): String {
-        val locale = LocaleContextHolder.getLocale()
-        return get(key, fallback, locale, *args)
-    }
-
-    /**
      * Resolves a localized message for the given key and locale.
      *
      * Attempts to retrieve the message from the underlying [messageSource]
@@ -54,7 +30,12 @@ class TranslationService (
      * @return the resolved and formatted message, or the formatted fallback message
      *         if the translation is missing
      */
-    fun get(key: String, fallback: String, locale: Locale, vararg args: Any): String {
+    fun get(
+        key: String,
+        vararg args: Any,
+        fallback: String = key,
+        locale: Locale = LocaleContextHolder.getLocale(),
+    ): String {
         return try {
             messageSource.getMessage(key, args, locale)
         } catch (e: NoSuchMessageException) {
