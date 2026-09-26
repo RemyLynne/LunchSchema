@@ -1,3 +1,5 @@
+import "@/main.css"
+
 void load()
 
 async function load() {
