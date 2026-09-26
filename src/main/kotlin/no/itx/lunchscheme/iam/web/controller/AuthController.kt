@@ -113,6 +113,7 @@ class AuthController(
         val optCredential = userCredentialRepository.findByUser(user)
         if (optCredential.isPresent) {
             authLogService.log(AuthLog.AuthLogAction.REGISTER, AuthLog.AuthLogResult.FAILURE, "Account already registered", ip, userAgent, user)
+            throw HttpEndpointException(translationService.get("error.account.alreadyRegistered", registerRequest.email), HttpStatus.CONFLICT)
         }
 
         userCredentialRepository.save(UserCredential(user, passwordEncoder.encode(registerRequest.password)!!))
