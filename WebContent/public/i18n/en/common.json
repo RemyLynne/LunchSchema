@@ -1,4 +1,7 @@
 {
+  "app": {
+    "name": "Lunch scheme"
+  },
   "errors": {
     "unknown": "Unknown error",
     "network": "Network error"

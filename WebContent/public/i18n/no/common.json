@@ -1,4 +1,7 @@
 {
+  "app": {
+    "name": "Lunsjordning"
+  },
   "errors": {
     "unknown": "Ukjent feil",
     "network": "Nettverksfeil"

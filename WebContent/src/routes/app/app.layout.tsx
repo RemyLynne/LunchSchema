@@ -13,7 +13,7 @@ export default function AppLayout() {
             <SidebarTrigger className="-ml-1" />
           </div>
         </header>
-        <main>
+        <main className="p-4 pt-0">
           <Outlet/>
         </main>
       </SidebarInset>

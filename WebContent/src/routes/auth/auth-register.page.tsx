@@ -1,4 +1,4 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card"
 import {Field, FieldDescription, FieldError, FieldGroup, FieldLabel} from "@/components/ui/field"
 import {Input} from "@/components/ui/input"
 import {Button} from "@/components/ui/button"
@@ -10,17 +10,24 @@ import {zodResolver} from "@hookform/resolvers/zod"
 import {api, isApiError} from "@/lib/api"
 import {userSchema} from "@/models/user"
 import {useUser} from "@/state/user.store"
-import {getAppText} from "@/lib/app-text.ts";
+import {getAppText} from "@/lib/app-text"
+
+const PASSWORD_MIN_LENGTH = 8
 
 const schema = z
   .object({
     email: z.email("fields.email.invalid"),
-    password: z.string().min(1, "fields.password.missing")
+    password: z.string().min(PASSWORD_MIN_LENGTH, "fields.password.minLength"),
+    confirmPassword: z.string().min(1, "fields.confirmPassword.missing"),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "fields.confirmPassword.inequal",
+    path: ["confirmPassword"], // error shows up under errors.confirmPassword
   })
 
 type FormValues = z.infer<typeof schema>
 
-export default function LoginPage() {
+export default function AuthRegisterPage() {
   const { setUser } = useUser()
   const { t } = useTranslation("auth")
 
@@ -30,11 +37,12 @@ export default function LoginPage() {
     defaultValues: {
       email: "",
       password: "",
+      confirmPassword: "",
     }
   })
 
-  const onSubmit: SubmitHandler<FormValues> = async (data) => {
-    const res = await api.post("/api/auth/login", data)
+  const onSubmit: SubmitHandler<FormValues> = async ({ confirmPassword: _confirmPassword, ...data }) => {
+    const res = await api.post("/api/auth/register", data)
 
     if (isApiError(res)) {
       if (res.error) setError("root", { message: getAppText(res.error, t) })
@@ -52,12 +60,12 @@ export default function LoginPage() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{t("login.title")}</CardTitle>
+        <CardTitle>{t("register.title")}</CardTitle>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit(onSubmit)}>
-          {errors.root?.message && <FieldError>{errors.root.message}</FieldError>}
           <FieldGroup>
+            {errors.root?.message && <FieldError>{errors.root.message}</FieldError>}
             <Controller
               name="email"
               control={formControl}
@@ -90,18 +98,36 @@ export default function LoginPage() {
                     aria-invalid={fieldState.invalid}
                   />
                   {fieldState.error?.message && (
+                    <FieldError>{t(fieldState.error.message, { min: PASSWORD_MIN_LENGTH })}</FieldError>
+                  )}
+                </Field>
+              )}
+            />
+            <Controller
+              name="confirmPassword"
+              control={formControl}
+              render={({field, fieldState}) => (
+                <Field data-invalid={fieldState.invalid}>
+                  <FieldLabel htmlFor={field.name}>{t("fields.confirmPassword.label")}</FieldLabel>
+                  <Input
+                    {...field}
+                    id={field.name}
+                    type="password"
+                    aria-invalid={fieldState.invalid}
+                  />
+                  {fieldState.error?.message && (
                     <FieldError>{t(fieldState.error.message)}</FieldError>
                   )}
                 </Field>
               )}
             />
             <Field>
-              <Button type="submit" disabled={!isValid}>{t("actions.login")}</Button>
+              <Button type="submit" disabled={!isValid}>{t("actions.register")}</Button>
               <FieldDescription className="text-center">
                 <Trans
                   t={t}
-                  i18nKey="login.notRegisteredPrompt"
-                  components={{ registerLink: <Link to="/register" /> }}
+                  i18nKey="register.alreadyRegisteredPrompt"
+                  components={{ loginLink: <Link to="/login" /> }}
                 />
               </FieldDescription>
             </Field>
