@@ -23,6 +23,7 @@ class UserDetailsServiceImpl(
         return User
             .withUsername(user.email)
             .password(credential.hash)
+            .authorities(*user.roles.flatMap { role -> role.permissions.map { it.name } }.toTypedArray())
             .build()
     }
 }

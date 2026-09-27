@@ -16,13 +16,13 @@ class UserCredential(
     @JoinColumn(name = "user_id", nullable = false, updatable = false)
     @MapsId
     var user: User,
-    @Column(nullable = false)
-    var hash: String
+    @Column(name = "hash", nullable = false)
+    var hash: String,
+    @Column(name = "last_changed_at", nullable = false)
+    var lastChangedAt: Instant = Instant.now()
 ) {
     @Id
     @Column(name = "user_id", nullable = false, updatable = false)
-    var id: Long? = null
+    var id: Int? = null
         protected set
-    @Column(name = "last_changed_at", nullable = false)
-    var lastChangedAt: Instant = Instant.now()
 }

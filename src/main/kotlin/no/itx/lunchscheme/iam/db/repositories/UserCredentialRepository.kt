@@ -7,6 +7,6 @@ import org.springframework.stereotype.Repository
 import java.util.Optional
 
 @Repository
-interface UserCredentialRepository : JpaRepository<UserCredential, Long> {
+interface UserCredentialRepository : JpaRepository<UserCredential, Int> {
     fun findByUser(user: User): Optional<UserCredential>
 }

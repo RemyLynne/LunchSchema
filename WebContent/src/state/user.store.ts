@@ -1,5 +1,5 @@
 import {createContext, use} from "react"
-import type {User} from "@/models/user"
+import type {User} from "@/models/iam/user"
 
 export type AuthState =
   | { status: "loading", user: null }

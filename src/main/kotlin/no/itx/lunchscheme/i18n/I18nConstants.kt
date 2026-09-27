@@ -5,4 +5,8 @@ import java.util.Locale
 object I18nConstants {
     val DEFAULT_LOCALE: Locale = Locale.ENGLISH
     val SUPPORTED_LOCALES: List<Locale> = listOf(Locale.ENGLISH, Locale.of("no"))
+
+    val LANGUAGE_MAP: Map<String, List<String>> = mapOf(
+        "no" to listOf("no", "nb", "nn")
+    )
 }

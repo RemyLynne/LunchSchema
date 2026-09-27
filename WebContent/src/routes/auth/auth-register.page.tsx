@@ -8,7 +8,7 @@ import {z} from "zod"
 import {Controller, type SubmitHandler, useForm} from "react-hook-form"
 import {zodResolver} from "@hookform/resolvers/zod"
 import {api, isApiError} from "@/lib/api"
-import {userSchema} from "@/models/user"
+import {userSchema} from "@/models/iam/user"
 import {useUser} from "@/state/user.store"
 import {getAppText} from "@/lib/app-text"
 
@@ -51,6 +51,7 @@ export default function AuthRegisterPage() {
 
     const parsed = userSchema.safeParse(await res.response.json().catch(() => null))
     if (!parsed.success) {
+      console.error(parsed.error)
       setError("root", { message: t("common:errors.unknown") })
     }
 

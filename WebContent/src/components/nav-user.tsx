@@ -14,7 +14,7 @@ import {api, isApiError} from "@/lib/api"
 import {ToastManager} from "@/lib/toast"
 import {getAppText} from "@/lib/app-text"
 import {Avatar, AvatarFallback} from "@/components/ui/avatar"
-import {getInitials} from "@/lib/utils.ts";
+import {getInitials} from "@/lib/utils"
 
 export function NavUser() {
   const { user, setUser } = useUser()

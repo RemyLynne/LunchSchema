@@ -18,25 +18,26 @@ class AuthLog(
     @OneToOne
     @JoinColumn(name = "user_id", updatable = false)
     var user: User?,
-    @Column(updatable = false)
+    @Column(name = "ip", updatable = false)
     var ip: String?,
     @Column(name = "user_agent", updatable = false)
     var userAgent: String?,
     @Enumerated(EnumType.ORDINAL)
-    @Column(nullable = false, updatable = false)
+    @Column(name = "action", nullable = false, updatable = false)
     var action: AuthLogAction,
     @Enumerated(EnumType.ORDINAL)
-    @Column(nullable = false, updatable = false)
+    @Column(name = "result", nullable = false, updatable = false)
     var result: AuthLogResult,
-    @Column(updatable = false)
-    var reason: String?
+    @Column(name = "reason", updatable = false)
+    var reason: String?,
+    @Column(name = "occurred_at", nullable = false, updatable = false)
+    var occurredAt: Instant = Instant.now()
 ) {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false, updatable = false)
     var id: Long? = null
         protected set
-    @Column(name = "occurred_at", nullable = false, updatable = false)
-    var occurredAt: Instant = Instant.now()
 
     enum class AuthLogAction {
         LOGIN,

@@ -1,6 +1,6 @@
 import {type PropsWithChildren, useCallback, useEffect, useMemo, useRef, useState} from "react"
 import {type AuthState, UserContext, type UserContextValue} from "@/state/user.store"
-import {type User, userSchema} from "@/models/user"
+import {type User, userSchema} from "@/models/iam/user"
 import {api, isApiError} from "@/lib/api"
 import {ToastManager} from "@/lib/toast"
 import {useTranslation} from "react-i18next"
@@ -67,9 +67,10 @@ async function fetchUser(translator: TFunction, signal?: AbortSignal): Promise<U
 
   const parsed = userSchema.safeParse(await res.response.json().catch(() => null))
   if (!parsed.success) {
+    console.error(parsed.error)
     ToastManager.add({
       type: "error",
-      title: parsed.error.message,
+      title: translator("common:errors.unknown"),
     })
     return null
   }
