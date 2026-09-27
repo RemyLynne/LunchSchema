@@ -16,20 +16,29 @@ export default function UserProvider({children}: PropsWithChildren) {
     setState(user ? { status: "authenticated", user } : { status: "unauthenticated", user: null })
   }, [])
 
-  useEffect(() => {
+  const refresh = useCallback(async () => {
     request.current?.abort() //stop any ongoing requests
 
     const controller = new AbortController()
     request.current = controller
-    void fetchUser(t, controller.signal).then((user) => {
+    await fetchUser(t, controller.signal).then((user) => {
       if (!controller.signal.aborted) setUser(user)
     })
-    return () => controller.abort()
   }, [setUser, t])
 
-  const refresh = useCallback(async () => {
-    setUser(await fetchUser(t))
-  }, [setUser, t])
+  useEffect(() => {
+    void refresh()
+
+    return () => request.current?.abort()
+  }, [refresh])
+
+  useEffect(() => {
+    if (state.status != "authenticated")
+      return
+
+    const poller = setInterval(() => refresh(), 30*1000)
+    return () => clearInterval(poller)
+  }, [refresh, state.status])
 
   const value: UserContextValue = {
     ...state,
