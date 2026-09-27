@@ -34,7 +34,7 @@ export default function LoginPage() {
   })
 
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
-    const res = await api.post("api/auth/login", data)
+    const res = await api.post("/api/auth/login", data)
 
     if (isApiError(res)) {
       if (res.error) setError("root", { message: getAppText(res.error, t) })

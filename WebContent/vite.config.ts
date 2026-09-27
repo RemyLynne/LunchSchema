@@ -8,7 +8,7 @@ import tailwindcss from "@tailwindcss/vite"
 export default defineConfig({
   plugins: [
     react(),
-    tailwindcss(),
+    tailwindcss()
   ],
   resolve: {
     alias: {
@@ -33,12 +33,19 @@ export default defineConfig({
         codeSplitting: {
           groups: [
             {
-              name: "react",
-              test: /node_modules[\\/]react|react-dom|react-router/
+              name: "vendor-react",
+              test: /node_modules[\\/](react|react-dom|react-router|react-hook-form)[\\/]/,
+              priority: 10
             },
             {
-              name: "i18n",
-              test: /node_modules[\\/]i18next|i18next-http-backend|react-i18next/
+              name: "vendor-baseui",
+              test: /node_modules[\\/](@base-ui)[\\/]/,
+              priority: 10
+            },
+            {
+              name: "vendor",
+              test: /node_modules/,
+              priority: 5
             }
           ]
         }

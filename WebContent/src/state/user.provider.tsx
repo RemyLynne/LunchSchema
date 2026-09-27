@@ -1,4 +1,4 @@
-import {type PropsWithChildren, useCallback, useEffect, useRef, useState} from "react"
+import {type PropsWithChildren, useCallback, useEffect, useMemo, useRef, useState} from "react"
 import {type AuthState, UserContext, type UserContextValue} from "@/state/user.store"
 import {type User, userSchema} from "@/models/user"
 import {api, isApiError} from "@/lib/api"
@@ -40,17 +40,17 @@ export default function UserProvider({children}: PropsWithChildren) {
     return () => clearInterval(poller)
   }, [refresh, state.status])
 
-  const value: UserContextValue = {
+  const value: UserContextValue = useMemo(() => ({
     ...state,
     setUser,
     refresh
-  }
+  }), [state, setUser, refresh])
 
   return <UserContext value={value}>{children}</UserContext>
 }
 
 async function fetchUser(translator: TFunction, signal?: AbortSignal): Promise<User | null> {
-  const res = await api.get("api/account", signal)
+  const res = await api.get("/api/account", signal)
 
   if (res.code === 401 || res.code === 403) {
     return null

@@ -1,11 +1,10 @@
 import "@/main.css"
+import "@/i18n"
 
 void load()
 
 async function load() {
   try {
-    await import("@/i18n")
-
     const { load } = await import("@/main-app-loader")
     load()
   } catch (error) {

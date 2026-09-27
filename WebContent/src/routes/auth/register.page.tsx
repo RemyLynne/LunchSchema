@@ -10,7 +10,7 @@ import {zodResolver} from "@hookform/resolvers/zod"
 import {api, isApiError} from "@/lib/api"
 import {userSchema} from "@/models/user"
 import {useUser} from "@/state/user.store"
-import {getAppText} from "@/lib/app-text.ts";
+import {getAppText} from "@/lib/app-text"
 
 const PASSWORD_MIN_LENGTH = 8
 
@@ -42,7 +42,7 @@ export default function RegisterPage() {
   })
 
   const onSubmit: SubmitHandler<FormValues> = async ({ confirmPassword: _confirmPassword, ...data }) => {
-    const res = await api.post("api/auth/register", data)
+    const res = await api.post("/api/auth/register", data)
 
     if (isApiError(res)) {
       if (res.error) setError("root", { message: getAppText(res.error, t) })

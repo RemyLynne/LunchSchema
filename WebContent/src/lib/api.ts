@@ -57,7 +57,7 @@ async function fetchInternal(
     const parsed = errorDtoSchema.safeParse(await res.json().catch(() => null))
 
     if (parsed.success)
-      return { code: res.status, error: { kind: "translated", text: "parsed.data.message" } }
+      return { code: res.status, error: { kind: "translated", text: parsed.data.message } }
 
     console.error(parsed.error)
     return { code: res.status, error: { kind: "translated", text: "common:errors.unknown" } }

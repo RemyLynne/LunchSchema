@@ -54,6 +54,7 @@ export default defineConfig([
           destructuredArrayIgnorePattern: "^_",
         },
       ],
+      "@typescript-eslint/only-throw-error": ["off"]
     },
     settings: {
       "import/resolver": {

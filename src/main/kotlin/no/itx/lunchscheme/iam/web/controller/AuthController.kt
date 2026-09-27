@@ -82,10 +82,10 @@ class AuthController(
 
         if (authentication != null) {
             try {
-                val user = userRepository.findByEmail(authentication.principal as String).orElseThrow() //should not be able to throw
+                val user = userRepository.findByEmail(authentication.name as String).orElseThrow() //should not be able to throw
                 authLogService.log(AuthLog.AuthLogAction.LOGOUT, AuthLog.AuthLogResult.SUCCESS, null, ip, userAgent, user)
             } catch (_: NoSuchElementException) {
-                log.warn("Could not find user with email: {}", authentication.principal)
+                log.warn("Could not find user with email: {}", authentication.name)
             }
         }
 
