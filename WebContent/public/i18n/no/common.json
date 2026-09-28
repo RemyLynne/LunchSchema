@@ -5,5 +5,8 @@
   "errors": {
     "unknown": "Ukjent feil",
     "network": "Nettverksfeil"
+  },
+  "pagination": {
+    "rowsPerPage": "Rader per side"
   }
 }

@@ -11,3 +11,10 @@ export const roleSchema = z.object({
 })
 
 export type Role = z.infer<typeof roleSchema>
+
+export function getHighestRole(roles: Role[]): Role | null {
+  if (roles.length === 0)
+    return null
+
+  return roles.reduce((acc, curr) => curr.sort < acc.sort ? curr : acc, roles[0] || undefined)
+}

@@ -10,6 +10,8 @@ import jakarta.persistence.JoinColumn
 import jakarta.persistence.JoinTable
 import jakarta.persistence.ManyToMany
 import jakarta.persistence.Table
+import no.itx.lunchscheme.iam.web.dto.UserDto
+import no.itx.lunchscheme.web.WithResponseDto
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.UpdateTimestamp
 import java.time.Instant
@@ -21,7 +23,7 @@ class User(
     var email: String,
     @Column(name = "name", nullable = false, unique = true)
     var name: String,
-) {
+) : WithResponseDto<UserDto> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false, updatable = false)
@@ -42,4 +44,6 @@ class User(
         inverseJoinColumns = [JoinColumn(name = "role_id")],
     )
     var roles: MutableSet<Role> = mutableSetOf()
+
+    override fun toDto() = UserDto(id, email, name, createdAt, updatedAt, roles.map(Role::toDto).toSet())
 }

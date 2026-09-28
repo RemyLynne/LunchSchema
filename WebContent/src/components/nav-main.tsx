@@ -2,7 +2,7 @@ import {SIDEBAR_ROUTES} from "@/routes"
 import {SidebarGroup, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem} from "@/components/ui/sidebar"
 import {Link, matchPath, useLocation} from "react-router"
 import {useMemo} from "react"
-import {useUser} from "@/hooks/use-user.ts"
+import {useUser} from "@/hooks/use-user"
 
 export function NavMain() {
   const user = useUser()

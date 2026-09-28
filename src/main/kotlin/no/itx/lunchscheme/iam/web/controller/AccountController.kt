@@ -22,6 +22,6 @@ class AccountController(
     ): ResponseEntity<UserDto> {
         val user = userRepository.findByEmail(authentication.name).orElseThrow() //should not be able to throw
 
-        return ResponseEntity.ok(UserDto.from(user))
+        return ResponseEntity.ok(user.toDto())
     }
 }

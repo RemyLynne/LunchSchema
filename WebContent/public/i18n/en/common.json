@@ -5,5 +5,8 @@
   "errors": {
     "unknown": "Unknown error",
     "network": "Network error"
+  },
+  "pagination": {
+    "rowsPerPage": "Rows per page"
   }
 }

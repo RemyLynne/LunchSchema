@@ -66,7 +66,7 @@ class AuthController(
 
         val user = authenticate(loginRequest.email, loginRequest.password, request, response, ip, userAgent)
 
-        return ResponseEntity.status(HttpStatus.OK).body(UserDto.from(user))
+        return ResponseEntity.status(HttpStatus.OK).body(user.toDto())
     }
 
     @PostMapping("/logout")
@@ -121,7 +121,7 @@ class AuthController(
 
         user = authenticate(registerRequest.email, registerRequest.password, request, response, ip, userAgent)
 
-        return ResponseEntity.status(HttpStatus.OK).body(UserDto.from(user))
+        return ResponseEntity.status(HttpStatus.OK).body(user.toDto())
     }
 
     private fun authenticate(

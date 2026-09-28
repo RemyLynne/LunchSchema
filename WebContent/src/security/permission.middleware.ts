@@ -1,7 +1,7 @@
 import {type MiddlewareFunction, redirect} from "react-router"
 import {hasPermission, type PermissionMode} from "@/security/access-utils"
 import {queryClient} from "@/lib/query-client"
-import {userQuery} from "@/hooks/use-user.ts"
+import {userQuery} from "@/hooks/use-user"
 
 export function requirePermissions(names: string | string[], mode?: PermissionMode): MiddlewareFunction {
   return async () => {

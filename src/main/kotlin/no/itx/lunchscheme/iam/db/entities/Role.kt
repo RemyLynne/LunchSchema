@@ -10,6 +10,8 @@ import jakarta.persistence.ManyToMany
 import jakarta.persistence.OneToOne
 import jakarta.persistence.Table
 import no.itx.lunchscheme.i18n.db.entities.Text
+import no.itx.lunchscheme.iam.web.dto.RoleDto
+import no.itx.lunchscheme.web.WithResponseDto
 
 @Entity
 @Table(name = "roles")
@@ -19,7 +21,7 @@ class Role(
     var title: Text,
     @Column(name = "sort", nullable = false)
     var sort: Int
-) {
+) : WithResponseDto<RoleDto> {
     @Id
     @Column(name = "id", nullable = false, updatable = false)
     var id: Int? = null
@@ -34,4 +36,6 @@ class Role(
         inverseJoinColumns = [JoinColumn(name = "permission_id")],
     )
     var permissions: MutableSet<Permission> = mutableSetOf()
+
+    override fun toDto() = RoleDto(id, systemKey, title.toDto(), sort, permissions.map(Permission::toDto).toSet())
 }
