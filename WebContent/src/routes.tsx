@@ -1,6 +1,4 @@
 import {createBrowserRouter, Navigate} from "react-router"
-import RequireAnonymous from "@/security/require-anonymous"
-import RequireAuthenticated from "@/security/require-authenticated"
 import AppLayout from "@/routes/app/app.layout"
 import AuthLayout from "@/routes/auth/auth.layout"
 import AuthLoginPage from "@/routes/auth/auth-login.page"
@@ -10,56 +8,56 @@ import AppOverviewPage from "@/routes/app/app-overview.page"
 import AppAdminUsersPage from "@/routes/app/admin/app-admin-users.page"
 import AppAdminMenuPage from "@/routes/app/admin/app-admin-menu.page"
 import {ChefHat, LayoutList, type LucideIcon, UserCog, Utensils} from "lucide-react"
+import type {User} from "@/models/iam/user"
+import {hasPermission} from "@/security/access-utils"
+import {permissionConstants} from "@/security/permission.constants"
+import {requirePermissions} from "@/security/permission.middleware"
+import {requireAnonymous} from "@/security/anonymous.middleware"
+import {requireAuthenticated} from "@/security/authenticated.middleware"
 
 export const router = createBrowserRouter([
   {
-    Component: RequireAnonymous,
+    Component: AuthLayout,
+    middleware: [requireAnonymous],
     children: [
       {
-        Component: AuthLayout,
-        children: [
-          {
-            path: "/login",
-            Component: AuthLoginPage
-          },
-          {
-            path: "/register",
-            Component: AuthRegisterPage
-          }
-        ]
+        path: "/login",
+        Component: AuthLoginPage
+      },
+      {
+        path: "/register",
+        Component: AuthRegisterPage
       }
     ]
   },
   {
-    Component: RequireAuthenticated,
+    Component: AppLayout,
+    middleware: [requireAuthenticated],
     children: [
       {
-        Component: AppLayout,
+        path: "/",
+        Component: () => (<Navigate to="/my-choices"/>)
+      },
+      {
+        path: "/my-choices",
+        Component: AppMyChoicesPage
+      },
+      {
+        path: "/overview",
+        Component: AppOverviewPage
+      },
+      {
+        path: "/admin",
         children: [
           {
-            path: "/",
-            Component: () => (<Navigate to="/my-choices"/>)
+            path: "users",
+            middleware: [requirePermissions(permissionConstants.ADMIN_USERS_VIEW)],
+            Component: AppAdminUsersPage
           },
           {
-            path: "/my-choices",
-            Component: AppMyChoicesPage
-          },
-          {
-            path: "/overview",
-            Component: AppOverviewPage
-          },
-          {
-            path: "/admin",
-            children: [
-              {
-                path: "users",
-                Component: AppAdminUsersPage
-              },
-              {
-                path: "menu",
-                Component: AppAdminMenuPage
-              }
-            ]
+            path: "menu",
+            middleware: [requirePermissions(permissionConstants.ADMIN_MENU_VIEW)],
+            Component: AppAdminMenuPage
           }
         ]
       }
@@ -72,14 +70,29 @@ export const SIDEBAR_ROUTES: SidebarRoutes = [
     titleKey: "Lunch",
     items: [
       { titleKey: "My choices", path: "/my-choices", icon: Utensils },
-      { titleKey: "Overview", path: "/overview", icon: LayoutList }
+      {
+        titleKey: "Overview",
+        path: "/overview",
+        icon: LayoutList,
+        canAccess: user => user != null && hasPermission(user, permissionConstants.OVERVIEW_VIEW)
+      }
     ]
   },
   {
     titleKey: "Admin",
     items: [
-      { titleKey: "Menu", path: "/admin/menu", icon: ChefHat },
-      { titleKey: "Users", path: "/admin/users", icon: UserCog }
+      {
+        titleKey: "Menu",
+        path: "/admin/menu",
+        icon: ChefHat,
+        canAccess: user => user != null && hasPermission(user, permissionConstants.ADMIN_MENU_VIEW),
+      },
+      {
+        titleKey: "Users",
+        path: "/admin/users",
+        icon: UserCog,
+        canAccess: user => user != null && hasPermission(user, permissionConstants.ADMIN_USERS_VIEW)
+      }
     ]
   }
 ]
@@ -89,6 +102,7 @@ export type SidebarRoutes = {
   items: {
     titleKey: string,
     path: string,
-    icon: LucideIcon
+    icon: LucideIcon,
+    canAccess?: (user?: User|null) => boolean
   }[]
 }[]

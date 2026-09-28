@@ -2,15 +2,15 @@ import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card"
 import {Field, FieldDescription, FieldError, FieldGroup, FieldLabel} from "@/components/ui/field"
 import {Input} from "@/components/ui/input"
 import {Button} from "@/components/ui/button"
-import {Link} from "react-router"
+import {Link, useNavigate} from "react-router"
 import {Trans, useTranslation} from "react-i18next"
 import {z} from "zod"
 import {Controller, type SubmitHandler, useForm} from "react-hook-form"
 import {zodResolver} from "@hookform/resolvers/zod"
 import {api, isApiError} from "@/lib/api"
 import {userSchema} from "@/models/iam/user"
-import {useUser} from "@/state/user.store"
 import {getAppText} from "@/lib/app-text"
+import {queryClient} from "@/lib/query-client"
 
 const PASSWORD_MIN_LENGTH = 8
 
@@ -28,8 +28,8 @@ const schema = z
 type FormValues = z.infer<typeof schema>
 
 export default function AuthRegisterPage() {
-  const { setUser } = useUser()
   const { t } = useTranslation("auth")
+  const navigate = useNavigate()
 
   const { control: formControl, handleSubmit, setError, formState: { errors, isValid } } = useForm({
     resolver: zodResolver(schema),
@@ -55,7 +55,8 @@ export default function AuthRegisterPage() {
       setError("root", { message: t("common:errors.unknown") })
     }
 
-    setUser(parsed.data!)
+    queryClient.setQueryData(["me"], parsed.data)
+    void navigate("/")
   }
 
   return (
