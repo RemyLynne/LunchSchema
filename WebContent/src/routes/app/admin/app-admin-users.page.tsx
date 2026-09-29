@@ -35,22 +35,20 @@ export default function AppAdminUsersPage() {
   const user = useUser()
 
   return (
-    <>
-      <div className="flex flex-col gap-4">
-        <div className="flex justify-between">
-          <h1 className="text-3xl font-semibold">{t("auth:user.labelPlural")}</h1>
-          {hasPermission(user.data!, permissionConstants.ADMIN_USERS_EDIT) && (
-            <Popup
-              trigger={<Button><Plus/>{t("auth:user.create")}</Button>}
-              title={t("auth:user.create")}
-            >
-              {close => (<UserAdminPopup close={close} setUser={() => setCounter(prev => prev+1)}/>)}
-            </Popup>
-          )}
-        </div>
-        <UserTable key={counter}/>
+    <div className="flex flex-col gap-4">
+      <div className="flex justify-between">
+        <h1 className="text-3xl font-semibold">{t("auth:user.labelPlural")}</h1>
+        {hasPermission(user.data!, permissionConstants.ADMIN_USERS_EDIT) && (
+          <Popup
+            trigger={<Button><Plus/>{t("auth:user.create")}</Button>}
+            title={t("auth:user.create")}
+          >
+            {close => (<UserAdminPopup close={close} setUser={() => setCounter(prev => prev+1)}/>)}
+          </Popup>
+        )}
       </div>
-    </>
+      <UserTable key={counter}/>
+    </div>
   )
 }
 
