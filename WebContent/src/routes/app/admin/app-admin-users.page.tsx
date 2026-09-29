@@ -175,8 +175,8 @@ function UserTable() {
                     </SelectTrigger>
                     <SelectContent align="start">
                       <SelectGroup>
-                        {PAGE_SIZES.map((size, index) => (
-                          <SelectItem key={index} value={size}>{size}</SelectItem>
+                        {PAGE_SIZES.map(size => (
+                          <SelectItem key={size} value={size}>{size}</SelectItem>
                         ))}
                       </SelectGroup>
                     </SelectContent>
