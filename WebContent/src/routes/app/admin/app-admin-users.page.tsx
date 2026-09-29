@@ -206,7 +206,7 @@ const schema = z
     confirmPassword: z.string(),
     roles: roleSchema.array()
   })
-  .refine((data) => (/*(data.id != null && data.password.length === 0) ||*/ data.password.length >= PASSWORD_MIN_LENGTH), {
+  .refine((data) => ((data.id != null && data.password.length === 0) || data.password.length >= PASSWORD_MIN_LENGTH), {
     message: "auth:fields.password.minLength",
     path: ["password"]
   })
