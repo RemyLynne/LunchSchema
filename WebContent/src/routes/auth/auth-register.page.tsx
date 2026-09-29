@@ -67,7 +67,7 @@ export default function AuthRegisterPage() {
       <CardContent>
         <form onSubmit={handleSubmit(onSubmit)}>
           <FieldGroup>
-            {errors.root?.message && <FieldError>{errors.root.message}</FieldError>}
+            {errors.root?.message && <FieldError className="mb-2">{errors.root.message}</FieldError>}
             <Controller
               name="email"
               control={formControl}

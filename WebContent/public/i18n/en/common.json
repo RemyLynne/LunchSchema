@@ -3,11 +3,14 @@
 		"cancel": "Cancel",
 		"close": "Close",
 		"create": "Create",
+		"deactivate": "Deactivate",
+		"reactivate": "Reactivate",
 		"save": "Save"
 	},
 	"app": {
 		"name": "Lunch scheme"
 	},
+	"dangerZone": "Danger zone",
 	"errors": {
 		"network": "Network error",
 		"unknown": "Unknown error"

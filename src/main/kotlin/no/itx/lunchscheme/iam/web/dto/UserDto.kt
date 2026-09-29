@@ -9,5 +9,6 @@ data class UserDto(
     val name: String,
     val createdAt: Instant?,
     val updatedAt: Instant?,
-    val roles: Set<RoleDto>
+    val roles: Set<RoleDto>,
+    val disabled: Boolean?
 ) : Dto()

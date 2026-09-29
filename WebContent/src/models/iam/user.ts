@@ -7,7 +7,8 @@ export const userSchema = z.object({
   name: z.string(),
   createdAt: z.iso.datetime().nullish(),
   updatedAt: z.iso.datetime().nullish(),
-  roles: z.array(roleSchema)
+  roles: z.array(roleSchema),
+  disabled: z.boolean().nullish()
 })
 
 export type User = z.infer<typeof userSchema>

@@ -59,7 +59,7 @@ export default function AuthLoginPage() {
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit(onSubmit)}>
-          {errors.root?.message && <FieldError>{errors.root.message}</FieldError>}
+          {errors.root?.message && <FieldError className="mb-2">{errors.root.message}</FieldError>}
           <FieldGroup>
             <Controller
               name="email"

@@ -4,13 +4,13 @@ import {Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableR
 import {Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select"
 import {useCallback, useEffect, useState} from "react"
 import {BasicPagination} from "@/components/basic-pagination"
-import {Field, FieldError, FieldGroup, FieldLabel} from "@/components/ui/field"
+import {Field, FieldDescription, FieldError, FieldGroup, FieldLabel} from "@/components/ui/field"
 import {useDebounce} from "use-debounce"
 import {type User, userSchema} from "@/models/iam/user"
 import {api, isApiError} from "@/lib/api"
 import {ToastManager} from "@/lib/toast"
 import {getAppText} from "@/lib/app-text"
-import {useTranslation} from "react-i18next"
+import {Trans, useTranslation} from "react-i18next"
 import {getPageSchema} from "@/models/iam/page"
 import {translateText} from "@/models/i18n/text"
 import {Badge} from "@/components/ui/badge"
@@ -24,6 +24,8 @@ import {z} from "zod"
 import {Controller, type SubmitHandler, useForm} from "react-hook-form"
 import {zodResolver} from "@hookform/resolvers/zod"
 import {useRoles} from "@/hooks/use-roles"
+import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card"
+import {ConfirmPopup} from "@/components/confirm-popup"
 
 const PASSWORD_MIN_LENGTH = 8
 
@@ -111,6 +113,7 @@ function UserTable() {
           <TableHead>{t("auth:fields.name.label")}</TableHead>
           <TableHead>{t("auth:fields.email.label")}</TableHead>
           <TableHead>{t("auth:fields.role.label")}</TableHead>
+          <TableHead>{t("auth:user.status.label")}</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -136,6 +139,13 @@ function UserTable() {
             <TableCell>{user.email}</TableCell>
             <TableCell>
               <RoleList roles={user.roles}/>
+            </TableCell>
+            <TableCell>
+              {user.disabled ? (
+                <Badge variant="secondary" className="text-muted-foreground">{t("auth:user.status.disabled")}</Badge>
+              ) : (
+                <Badge variant="success">{t("auth:user.status.enabled")}</Badge>
+              )}
             </TableCell>
           </TableRow>
         ))}
@@ -247,10 +257,36 @@ function UserAdminPopup({user, setUser, close}: UserAdminPopupProps) {
     close()
   }
 
+  const deactivate = useCallback(async () => {
+    const res = await api.post(`/api/users/${user!.id}/deactivate`, {})
+
+    if (isApiError(res) && res.error)
+      ToastManager.add({
+        type: "error",
+        title: getAppText(res.error, t)
+      })
+
+    setUser({...user!, disabled: true})
+    close()
+  }, [close, setUser, t, user])
+
+  const reactivate = useCallback(async () => {
+    const res = await api.post(`/api/users/${user!.id}/reactivate`, {})
+
+    if (isApiError(res) && res.error)
+      ToastManager.add({
+        type: "error",
+        title: getAppText(res.error, t)
+      })
+
+    setUser({...user!, disabled: false})
+    close()
+  }, [close, setUser, t, user])
+
   return (
     <form className="grid items-start gap-6" onSubmit={handleSubmit(onSubmit)}>
       <FieldGroup>
-        {errors.root?.message && <FieldError>{t(errors.root.message)}</FieldError>}
+        {errors.root?.message && <FieldError className="mb-2">{t(errors.root.message)}</FieldError>}
         <Controller
           name="name"
           control={formControl}
@@ -376,6 +412,38 @@ function UserAdminPopup({user, setUser, close}: UserAdminPopupProps) {
               </Field>
             )}
           />
+        )}
+        {hasPermission(me.data!, permissionConstants.ADMIN_USERS_EDIT) && user?.id && user.id != me.data!.id && (
+          <Field className="mt-2">
+            <Card variant="destructive">
+              <CardHeader>
+                <CardTitle>{t("common:dangerZone")}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex justify-between items-center">
+                  <div>
+                    <FieldLabel>{t(user.disabled ? "auth:user.prompt.reactivate.title" : "auth:user.prompt.deactivate.title")}</FieldLabel>
+                    <FieldDescription>{t(user.disabled ? "auth:user.prompt.reactivate.description" : "auth:user.prompt.deactivate.description")}</FieldDescription>
+                  </div>
+                  <ConfirmPopup
+                    trigger={<Button size="sm" variant="destructive">{t(user.disabled ? "common:actions.reactivate" : "common:actions.deactivate")}</Button>}
+                    title={t(user.disabled ? "auth:user.prompt.reactivate.confirm.title" : "auth:user.prompt.deactivate.confirm.title")}
+                    content={
+                    <span>
+                      <Trans
+                        i18nKey={user.disabled ? "auth:user.prompt.reactivate.confirm.description" : "auth:user.prompt.deactivate.confirm.description"}
+                        values={{email: user.email}}
+                        components={{ bold: <strong/> }}
+                      />
+                    </span>
+                    }
+                    confirmButtonText={t(user.disabled ? "common:actions.reactivate" : "common:actions.deactivate")}
+                    callback={user.disabled ? reactivate : deactivate}
+                  />
+                </div>
+              </CardContent>
+            </Card>
+          </Field>
         )}
         <Field>
           <div className="flex justify-end gap-2">

@@ -3,11 +3,14 @@
 		"cancel": "Avbryt",
 		"close": "Lukk",
 		"create": "Opprett",
+		"deactivate": "Deaktiver",
+		"reactivate": "Reaktiver",
 		"save": "Lagre"
 	},
 	"app": {
 		"name": "Lunsjordning"
 	},
+	"dangerZone": "Faresone",
 	"errors": {
 		"network": "Nettverksfeil",
 		"unknown": "Ukjent feil"

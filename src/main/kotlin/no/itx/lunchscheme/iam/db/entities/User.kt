@@ -44,6 +44,8 @@ class User(
         inverseJoinColumns = [JoinColumn(name = "role_id")],
     )
     var roles: MutableSet<Role> = mutableSetOf()
+    @Column(nullable = false)
+    var disabled: Boolean = false
 
-    override fun toDto() = UserDto(id, email, name, createdAt, updatedAt, roles.map(Role::toDto).toSet())
+    override fun toDto() = UserDto(id, email, name, createdAt, updatedAt, roles.map(Role::toDto).toSet(), disabled)
 }

@@ -5,7 +5,6 @@ import jakarta.validation.Valid
 import no.itx.lunchscheme.Parse
 import no.itx.lunchscheme.i18n.TranslationService
 import no.itx.lunchscheme.iam.PermissionConstant
-import no.itx.lunchscheme.iam.db.entities.AuthLog
 import no.itx.lunchscheme.iam.db.entities.User
 import no.itx.lunchscheme.iam.db.entities.UserCredential
 import no.itx.lunchscheme.iam.db.repositories.RoleRepository
@@ -14,7 +13,6 @@ import no.itx.lunchscheme.iam.db.repositories.UserRepository
 import no.itx.lunchscheme.iam.web.dto.PageDto
 import no.itx.lunchscheme.iam.web.dto.UserDto
 import no.itx.lunchscheme.iam.web.dto.UserRequestDto
-import no.itx.lunchscheme.iam.web.service.AuthLogService
 import no.itx.lunchscheme.web.WebConstants.API_BASE
 import no.itx.lunchscheme.web.exception.HttpEndpointException
 import no.itx.lunchscheme.web.toDto
@@ -28,6 +26,7 @@ import org.springframework.security.core.Authentication
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -42,8 +41,7 @@ class UsersController(
     private val userCredentialRepository: UserCredentialRepository,
     private val translationService: TranslationService,
     private val roleRepository: RoleRepository,
-    private val passwordEncoder: PasswordEncoder,
-    private val authLogService: AuthLogService
+    private val passwordEncoder: PasswordEncoder
 ) {
     private val log = LoggerFactory.getLogger(javaClass)
 
@@ -91,11 +89,6 @@ class UsersController(
         user.roles = roleRepository.findAllById(postRequest.roles).toMutableSet()
         user = userRepository.save(user)
 
-        if (new)
-            authLogService.log(AuthLog.AuthLogAction.CREATE, AuthLog.AuthLogResult.SUCCESS, "Created by userId=${executor.id}", ip, userAgent, user)
-        else
-            authLogService.log(AuthLog.AuthLogAction.UPDATE, AuthLog.AuthLogResult.SUCCESS, "Updated by userId=${executor.id}", ip, userAgent, user)
-
         if (Parse.nullOrEmpty(postRequest.password))
             return ResponseEntity.status(HttpStatus.OK).body(user.toDto())
 
@@ -105,5 +98,53 @@ class UsersController(
         userCredentialRepository.save(credentials)
 
         return ResponseEntity.status(if (new) HttpStatus.CREATED else HttpStatus.OK).body(user.toDto())
+    }
+
+    @PostMapping("/{id}/deactivate")
+    @PreAuthorize("hasAuthority('${PermissionConstant.ADMIN_USERS_EDIT}')")
+    fun deactivate(
+        @PathVariable id: Int,
+        authentication: Authentication,
+        request: HttpServletRequest,
+    ): ResponseEntity<Void> {
+        val ip = RequestUtils.ipFrom(request)
+        val userAgent = RequestUtils.userAgentFrom(request)
+        val executor = userRepository.findByEmail(authentication.name).orElseThrow() //should not be able to throw
+
+        log.debug("Deactivation attempt from userId={} ip={} user_agent={}", executor.id, ip, userAgent)
+
+        val user = userRepository.findById(id).orElseThrow {
+            HttpEndpointException(translationService.get("error.account.idNotFound", id), HttpStatus.BAD_REQUEST)
+        }
+
+        user.disabled = true
+
+        userRepository.save(user)
+
+        return ResponseEntity.status(HttpStatus.OK).body(null)
+    }
+
+    @PostMapping("/{id}/reactivate")
+    @PreAuthorize("hasAuthority('${PermissionConstant.ADMIN_USERS_EDIT}')")
+    fun reactivate(
+        @PathVariable id: Int,
+        authentication: Authentication,
+        request: HttpServletRequest,
+    ): ResponseEntity<Void> {
+        val ip = RequestUtils.ipFrom(request)
+        val userAgent = RequestUtils.userAgentFrom(request)
+        val executor = userRepository.findByEmail(authentication.name).orElseThrow() //should not be able to throw
+
+        log.debug("Reactivation attempt from userId={} ip={} user_agent={}", executor.id, ip, userAgent)
+
+        val user = userRepository.findById(id).orElseThrow {
+            HttpEndpointException(translationService.get("error.account.idNotFound", id), HttpStatus.BAD_REQUEST)
+        }
+
+        user.disabled = false
+
+        userRepository.save(user)
+
+        return ResponseEntity.status(HttpStatus.OK).body(null)
     }
 }

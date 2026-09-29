@@ -24,6 +24,7 @@ class UserDetailsServiceImpl(
             .withUsername(user.email)
             .password(credential.hash)
             .authorities(*user.roles.flatMap { role -> role.permissions.map { it.name } }.toTypedArray())
+            .disabled(user.disabled)
             .build()
     }
 }

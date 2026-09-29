@@ -1,4 +1,4 @@
-import {type ReactElement, useState} from "react"
+import {type ReactElement, type ReactNode, useState} from "react"
 import {useIsMobile} from "@/hooks/use-mobile"
 import {
   Dialog,
@@ -13,7 +13,7 @@ import {DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle, DrawerTrigg
 
 interface PopupProps {
   trigger: ReactElement,
-  title: string,
+  title: ReactNode,
   description?: string,
   children: (close: () => void) => ReactElement,
 }
@@ -52,7 +52,9 @@ function DesktopPopup({trigger, title, description, children, open, setOpen}: De
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger render={trigger}/>
-      <DialogContent>
+      <DialogContent
+        className="data-nested-dialog-open:blur-[2px] data-nested-dialog-open:brightness-75 data-nested-dialog-open:scale-[calc(1-0.05*var(--nested-dialogs))] transition-[filter,scale]"
+      >
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
           <DialogDescription>{description}</DialogDescription>
