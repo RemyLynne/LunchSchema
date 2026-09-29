@@ -1,12 +1,18 @@
 {
-  "app": {
-    "name": "Lunch scheme"
-  },
-  "errors": {
-    "unknown": "Unknown error",
-    "network": "Network error"
-  },
-  "pagination": {
-    "rowsPerPage": "Rows per page"
-  }
+	"actions": {
+		"cancel": "Cancel",
+		"close": "Close",
+		"create": "Create",
+		"save": "Save"
+	},
+	"app": {
+		"name": "Lunch scheme"
+	},
+	"errors": {
+		"network": "Network error",
+		"unknown": "Unknown error"
+	},
+	"pagination": {
+		"rowsPerPage": "Rows per page"
+	}
 }

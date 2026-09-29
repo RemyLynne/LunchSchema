@@ -1,6 +1,6 @@
 import {createContext, use} from "react"
 
-export interface SidebarContextProps {
+export interface SidebarContextValue {
   state: "expanded" | "collapsed"
   open: boolean
   setOpen: (open: boolean) => void
@@ -10,7 +10,7 @@ export interface SidebarContextProps {
   toggleSidebar: () => void
 }
 
-export const SidebarContext = createContext<SidebarContextProps|null>(null)
+export const SidebarContext = createContext<SidebarContextValue|null>(null)
 
 export function useSidebar() {
   const ctx = use(SidebarContext)

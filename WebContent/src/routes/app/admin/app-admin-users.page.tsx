@@ -2,9 +2,9 @@ import {Button} from "@/components/ui/button"
 import {Plus} from "lucide-react"
 import {Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow} from "@/components/ui/table"
 import {Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select"
-import {useEffect, useState} from "react"
+import {useCallback, useEffect, useState} from "react"
 import {BasicPagination} from "@/components/basic-pagination"
-import { Field ,FieldLabel} from "@/components/ui/field"
+import {Field, FieldError, FieldGroup, FieldLabel} from "@/components/ui/field"
 import {useDebounce} from "use-debounce"
 import {type User, userSchema} from "@/models/iam/user"
 import {api, isApiError} from "@/lib/api"
@@ -17,24 +17,36 @@ import {Badge} from "@/components/ui/badge"
 import {hasPermission} from "@/security/access-utils"
 import {useUser} from "@/hooks/use-user"
 import {permissionConstants} from "@/security/permission.constants"
-import {getHighestRole} from "@/models/iam/role"
+import {getHighestRole, type Role, roleSchema} from "@/models/iam/role"
+import {Popup} from "@/components/popup"
+import { Input } from "@/components/ui/input"
+import {z} from "zod"
+import {Controller, type SubmitHandler, useForm} from "react-hook-form"
+import {zodResolver} from "@hookform/resolvers/zod"
+import {useRoles} from "@/hooks/use-roles"
+
+const PASSWORD_MIN_LENGTH = 8
 
 export default function AppAdminUsersPage() {
   const { t } = useTranslation()
+  const [counter, setCounter] = useState<number>(0)
   const user = useUser()
+
   return (
     <>
       <div className="flex flex-col gap-4">
         <div className="flex justify-between">
           <h1 className="text-3xl font-semibold">{t("auth:user.labelPlural")}</h1>
           {hasPermission(user.data!, permissionConstants.ADMIN_USERS_EDIT) && (
-            <Button onClick={() => console.log("New user")}>
-              <Plus/>
-              {t("auth:user.create")}
-            </Button>
+            <Popup
+              trigger={<Button><Plus/>{t("auth:user.create")}</Button>}
+              title={t("auth:user.create")}
+            >
+              {close => (<UserAdminPopup close={close} setUser={() => setCounter(prev => prev+1)}/>)}
+            </Popup>
           )}
         </div>
-        <UserTable/>
+        <UserTable key={counter}/>
       </div>
     </>
   )
@@ -49,7 +61,7 @@ function UserTable() {
   const [page, setPage] = useState(1)
   const [debouncedPage] = useDebounce(page, 500)
   const [totalPages, setTotalPages] = useState<number>(1)
-  const [content, setContent] = useState<User[]>([])
+  const [users, setUsers] = useState<User[]>([])
 
   useEffect(() => {
     const controller = new AbortController()
@@ -59,7 +71,7 @@ function UserTable() {
       if (controller.signal.aborted) return
 
       if (isApiError(res)) {
-        ToastManager.add({priority: "high", title: res.error ? getAppText(res.error, t) : t("common:errors.unknown")})
+        ToastManager.add({type: "error", title: res.error ? getAppText(res.error, t) : t("common:errors.unknown")})
         return
       }
 
@@ -67,17 +79,30 @@ function UserTable() {
       if (controller.signal.aborted) return
       if (!parsed.success || parsed.data == null) {
         console.error(parsed.error)
-        ToastManager.add({priority: "high", title: t("common:errors.unknown")})
+        ToastManager.add({type: "error", title: t("common:errors.unknown")})
         return
       }
 
       setTotalPages(parsed.data.totalPages)
-      setContent(parsed.data.content)
+      setUsers(parsed.data.content)
     }
     void fetch()
 
     return () => controller.abort()
   }, [debouncedPage, debouncedRowsPerPage, t])
+
+  const replaceUser = useCallback((newUser: User) => {
+    setUsers((prev) => {
+      const index = prev.findIndex(u => u.id === newUser.id)
+      if (index === -1) return prev
+
+      return [
+        ...prev.slice(0, index),
+        newUser,
+        ...prev.slice(index+1)
+      ]
+    })
+  }, [])
 
   return (
     <Table>
@@ -89,28 +114,28 @@ function UserTable() {
         </TableRow>
       </TableHeader>
       <TableBody>
-        {content.map(item => (
+        {users.map((user) => (
           <TableRow
-            key={item.id}
+            key={user.id}
             className="relative cursor-pointer focus-within:bg-muted/50 has-[a:focus-visible]:outline has-[a:focus-visible]:outline-2 has-[a:focus-visible]:outline-ring"
           >
             <TableCell>
-              <button
-                type="button"
-                onClick={() => console.log("open user", item)}
-                className="text-left font-medium outline-none after:absolute after:inset-0 after:content-['']"
-              >{item.name}</button>
+              <Popup
+                trigger={<button type="button" className="text-left font-medium outline-none after:absolute after:inset-0 after:content-['']">{user.name}</button>}
+                title={t("auth:user.edit")}
+              >
+                {close => (
+                  <UserAdminPopup
+                    close={close}
+                    user={user}
+                    setUser={replaceUser}
+                  />
+                )}
+              </Popup>
             </TableCell>
-            <TableCell>{item.email}</TableCell>
+            <TableCell>{user.email}</TableCell>
             <TableCell>
-              {item.roles.length && (
-                <>
-                  <Badge>{translateText(getHighestRole(item.roles)!.title)}</Badge>
-                  {item.roles.length > 1 && (
-                    <span className="ml-1">+{item.roles.length-1}</span>
-                  )}
-                </>
-              )}
+              <RoleList roles={user.roles}/>
             </TableCell>
           </TableRow>
         ))}
@@ -151,5 +176,245 @@ function UserTable() {
         </TableRow>
       </TableFooter>
     </Table>
+  )
+}
+
+interface UserAdminPopupProps {
+  user?: User,
+  setUser: (user: User) => void,
+  close: () => void
+}
+
+const schema = z
+  .object({
+    id: z.number().nullish(),
+    name: z.string().min(1, "auth:fields.name.missing"),
+    email: z.email("auth:fields.email.invalid"),
+    password: z.string(),
+    confirmPassword: z.string(),
+    roles: roleSchema.array()
+  })
+  .refine((data) => (/*(data.id != null && data.password.length === 0) ||*/ data.password.length >= PASSWORD_MIN_LENGTH), {
+    message: "auth:fields.password.minLength",
+    path: ["password"]
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "auth:fields.confirmPassword.inequal",
+    path: ["confirmPassword"]
+  })
+
+type FormValues = z.infer<typeof schema>
+
+function UserAdminPopup({user, setUser, close}: UserAdminPopupProps) {
+  const { t } = useTranslation()
+  const me = useUser()
+  const roles = useRoles()
+
+  const sortedRoles = (roles.data??[]).sort((a,b) => a.sort - b.sort)
+
+  const { control: formControl, handleSubmit, setError, formState: { errors, isValid } } = useForm({
+    resolver: zodResolver(schema),
+    mode: "onChange",
+    defaultValues: {
+      id: user?.id,
+      name: user?.name ?? "",
+      email: user?.email ?? "",
+      password: "",
+      confirmPassword: "",
+      roles: user?.roles ?? []
+    }
+  })
+
+  const onSubmit: SubmitHandler<FormValues> = async ({confirmPassword: _confirmPassword, roles, ...data}) => {
+    const res = await api.post("/api/users", {
+      ...data,
+      roles: roles.map(role => role.id)
+    })
+
+    if (isApiError(res)) {
+      if (res.error) setError("root", { message: getAppText(res.error, t)})
+      return
+    }
+
+    const parsed = userSchema.safeParse(await res.response.json().catch(() => null))
+    if (!parsed.success) {
+      console.error(parsed.error)
+      setError("root", { message: t("common:errors.unknown")})
+      return
+    }
+
+    setUser(parsed.data)
+    close()
+  }
+
+  return (
+    <form className="grid items-start gap-6" onSubmit={handleSubmit(onSubmit)}>
+      <FieldGroup>
+        {errors.root?.message && <FieldError>{t(errors.root.message)}</FieldError>}
+        <Controller
+          name="name"
+          control={formControl}
+          render={({field, fieldState}) => (
+            <Field data-invalid={fieldState.invalid}>
+              <FieldLabel htmlFor={field.name}>{t("auth:fields.name.label")}</FieldLabel>
+              <Input
+                {...field}
+                id={field.name}
+                type="text"
+                aria-invalid={fieldState.invalid}
+                disabled={!hasPermission(me.data!, permissionConstants.ADMIN_USERS_EDIT)}
+              />
+              {fieldState.error?.message && (
+                <FieldError>{t(fieldState.error.message)}</FieldError>
+              )}
+            </Field>
+          )}
+        />
+        <Controller
+          name="email"
+          control={formControl}
+          render={({field, fieldState}) => (
+            <Field data-invalid={fieldState.invalid}>
+              <FieldLabel htmlFor={field.name}>{t("auth:fields.email.label")}</FieldLabel>
+              <Input
+                {...field}
+                id={field.name}
+                type="email"
+                placeholder="user@example.com"
+                aria-invalid={fieldState.invalid}
+                disabled={!hasPermission(me.data!, permissionConstants.ADMIN_USERS_EDIT) || user?.id != null}
+              />
+              {fieldState.error?.message && (
+                <FieldError>{t(fieldState.error.message)}</FieldError>
+              )}
+            </Field>
+          )}
+        />
+        {hasPermission(me.data!, permissionConstants.ADMIN_USERS_EDIT) && (
+          <>
+            <Controller
+              name="password"
+              control={formControl}
+              render={({field, fieldState}) => (
+                <Field data-invalid={fieldState.invalid}>
+                  <FieldLabel htmlFor={field.name}>{t(user?.id ? "auth:fields.password.label" : "auth:fields.password.labelNew")}</FieldLabel>
+                  <Input
+                    {...field}
+                    id={field.name}
+                    type="password"
+                    aria-invalid={fieldState.invalid}
+                  />
+                  {fieldState.error?.message && (
+                    <FieldError>{t(fieldState.error.message, {min: PASSWORD_MIN_LENGTH})}</FieldError>
+                  )}
+                </Field>
+              )}
+            />
+            <Controller
+              name="confirmPassword"
+              control={formControl}
+              render={({field, fieldState}) => (
+                <Field data-invalid={fieldState.invalid}>
+                  <FieldLabel htmlFor={field.name}>{t("auth:fields.confirmPassword.label")}</FieldLabel>
+                  <Input
+                    {...field}
+                    id={field.name}
+                    type="password"
+                    aria-invalid={fieldState.invalid}
+                  />
+                  {fieldState.error?.message && (
+                    <FieldError>{t(fieldState.error.message)}</FieldError>
+                  )}
+                </Field>
+              )}
+            />
+          </>
+        )}
+        {sortedRoles.length > 0 && (
+          <Controller
+            name="roles"
+            control={formControl}
+            render={({field, fieldState}) => (
+              <Field data-invalid={fieldState.invalid}>
+                <FieldLabel htmlFor={field.name}>{t("auth:fields.role.labelPlural")}</FieldLabel>
+                <Select
+                  multiple
+                  name={field.name}
+                  value={field.value}
+                  onValueChange={field.onChange}
+                  isItemEqualToValue={(a,b) => a.id === b.id}
+                  itemToStringLabel={(role) => translateText(role.title)}
+                >
+                  <SelectTrigger
+                    id={field.name}
+                    ref={field.ref}
+                    onBlur={field.onBlur}
+                    aria-invalid={fieldState.invalid}
+                  >
+                    <SelectValue>
+                      {(roles: Role[]) => roles.length
+                        ? (<RoleList roles={roles}/>)
+                        : t("auth:fields.role.selectPlural")
+                      }
+                    </SelectValue>
+                  </SelectTrigger>
+                  <SelectContent>
+                    {sortedRoles.map(role => (
+                      <SelectItem
+                        key={role.id}
+                        value={role}
+                        disabled={!hasPermission(me.data!, permissionConstants.ADMIN_USERS_EDIT)  || role.id! <= (getHighestRole(me.data!.roles ?? [])?.id??Number.MAX_VALUE)}
+                      >
+                        {translateText(role.title)}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {fieldState.error?.message && (
+                  <FieldError>{t(fieldState.error.message)}</FieldError>
+                )}
+              </Field>
+            )}
+          />
+        )}
+        <Field>
+          <div className="flex justify-end gap-2">
+            <Button
+              variant="outline"
+              type="button"
+              onClick={close}
+            >
+              {t(hasPermission(me.data!, permissionConstants.ADMIN_USERS_EDIT) ? "common:actions.cancel" : "common:actions.close")}
+            </Button>
+            {hasPermission(me.data!, permissionConstants.ADMIN_USERS_EDIT) && (
+              <Button type="submit" disabled={!isValid}>{t(user?.id ? "common:actions.save" : "common:actions.create")}</Button>
+            )}
+          </div>
+        </Field>
+      </FieldGroup>
+    </form>
+  )
+}
+
+interface RoleListProps {
+  roles: Role[],
+  length?: number
+}
+
+function RoleList({roles, length = 1}: RoleListProps) {
+  const sorted = roles.sort((a, b) => a.sort - b.sort)
+
+  const elements = sorted.slice(0, length)
+  const remaining = sorted.slice(length).length
+
+  return (
+    <>
+      {elements.map(role => (
+        <Badge key={role.id}>{translateText(role.title)}</Badge>
+      ))}
+      {remaining > 0 && (
+        <span className="ml-1">+{remaining}</span>
+      )}
+    </>
   )
 }

@@ -1,7 +1,7 @@
 import {useState, type ComponentProps, type CSSProperties, useCallback, useEffect, useMemo} from "react"
 import { cn } from "@/lib/utils"
 import {useIsMobile} from "@/hooks/use-mobile"
-import {SidebarContext, type SidebarContextProps} from "@/state/sidebar.store"
+import {SidebarContext, type SidebarContextValue} from "@/state/sidebar.store"
 
 const SIDEBAR_COOKIE_NAME = "sidebar_state"
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7
@@ -66,7 +66,7 @@ export function SidebarProvider({
   // This makes it easier to style the sidebar with Tailwind classes.
   const state = open ? "expanded" : "collapsed"
 
-  const contextValue = useMemo<SidebarContextProps>(() => ({
+  const contextValue = useMemo<SidebarContextValue>(() => ({
     state,
     open,
     setOpen,

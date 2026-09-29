@@ -1,12 +1,18 @@
 {
-  "app": {
-    "name": "Lunsjordning"
-  },
-  "errors": {
-    "unknown": "Ukjent feil",
-    "network": "Nettverksfeil"
-  },
-  "pagination": {
-    "rowsPerPage": "Rader per side"
-  }
+	"actions": {
+		"cancel": "Avbryt",
+		"close": "Lukk",
+		"create": "Opprett",
+		"save": "Lagre"
+	},
+	"app": {
+		"name": "Lunsjordning"
+	},
+	"errors": {
+		"network": "Nettverksfeil",
+		"unknown": "Ukjent feil"
+	},
+	"pagination": {
+		"rowsPerPage": "Rader per side"
+	}
 }

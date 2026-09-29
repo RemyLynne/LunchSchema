@@ -8,4 +8,7 @@ object PermissionConstant {
     const val ADMIN_MENU_VIEW = "admin.menu.view"
     const val ADMIN_USERS_EDIT = "admin.users.edit"
     const val ADMIN_USERS_VIEW = "admin.users.view"
+    const val ROLES_VIEW = "roles.view"
+    const val ROLES_EDIT = "roles.edit"
+    const val PERMISSIONS_VIEW = "permissions.view"
 }

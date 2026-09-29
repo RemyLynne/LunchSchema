@@ -1,9 +1,9 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import {Field, FieldDescription, FieldError, FieldGroup, FieldLabel} from "@/components/ui/field"
+import {Field, FieldError, FieldGroup, FieldLabel} from "@/components/ui/field"
 import {Input} from "@/components/ui/input"
 import {Button} from "@/components/ui/button"
-import {Link, redirect, useNavigate} from "react-router"
-import {Trans, useTranslation} from "react-i18next"
+import {redirect, useNavigate} from "react-router"
+import {useTranslation} from "react-i18next"
 import {z} from "zod"
 import {Controller, type SubmitHandler, useForm} from "react-hook-form"
 import {zodResolver} from "@hookform/resolvers/zod"
@@ -100,13 +100,6 @@ export default function AuthLoginPage() {
             />
             <Field>
               <Button type="submit" disabled={!isValid}>{t("actions.login")}</Button>
-              <FieldDescription className="text-center">
-                <Trans
-                  t={t}
-                  i18nKey="login.notRegisteredPrompt"
-                  components={{ registerLink: <Link to="/register" /> }}
-                />
-              </FieldDescription>
             </Field>
           </FieldGroup>
         </form>

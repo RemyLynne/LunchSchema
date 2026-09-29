@@ -7,6 +7,8 @@ INSERT INTO users (email, name)
 VALUES (@email, @name);
 ```
 
+After creating the user, navigate to `/register` to set the password and log in
+
 ## Give user admin
 
 ```sql

@@ -6,3 +6,4 @@ build/
 .kotlin
 **/out/production
 .env
+*.babel

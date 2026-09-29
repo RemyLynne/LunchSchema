@@ -6,4 +6,7 @@ export const permissionConstants = {
   ADMIN_MENU_VIEW: "admin.menu.view",
   ADMIN_USERS_EDIT: "admin.users.edit",
   ADMIN_USERS_VIEW: "admin.users.view",
+  ROLES_VIEW: "roles.view",
+  ROLES_EDIT: "roles.edit",
+  PERMISSIONS_VIEW: "permissions.view"
 }
