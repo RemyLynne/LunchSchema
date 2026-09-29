@@ -1,9 +1,11 @@
 package no.itx.lunchscheme.iam.web.controller
 
+import jakarta.servlet.http.HttpServletRequest
 import jakarta.validation.Valid
 import no.itx.lunchscheme.Parse
 import no.itx.lunchscheme.i18n.TranslationService
 import no.itx.lunchscheme.iam.PermissionConstant
+import no.itx.lunchscheme.iam.db.entities.AuthLog
 import no.itx.lunchscheme.iam.db.entities.User
 import no.itx.lunchscheme.iam.db.entities.UserCredential
 import no.itx.lunchscheme.iam.db.repositories.RoleRepository
@@ -12,13 +14,17 @@ import no.itx.lunchscheme.iam.db.repositories.UserRepository
 import no.itx.lunchscheme.iam.web.dto.PageDto
 import no.itx.lunchscheme.iam.web.dto.UserDto
 import no.itx.lunchscheme.iam.web.dto.UserRequestDto
+import no.itx.lunchscheme.iam.web.service.AuthLogService
 import no.itx.lunchscheme.web.WebConstants.API_BASE
 import no.itx.lunchscheme.web.exception.HttpEndpointException
 import no.itx.lunchscheme.web.toDto
+import no.itx.lunchscheme.web.utils.RequestUtils
+import org.slf4j.LoggerFactory
 import org.springframework.data.domain.PageRequest
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
+import org.springframework.security.core.Authentication
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.GetMapping
@@ -37,7 +43,10 @@ class UsersController(
     private val translationService: TranslationService,
     private val roleRepository: RoleRepository,
     private val passwordEncoder: PasswordEncoder,
+    private val authLogService: AuthLogService
 ) {
+    private val log = LoggerFactory.getLogger(javaClass)
+
     @GetMapping
     @PreAuthorize("hasAuthority('${PermissionConstant.ADMIN_USERS_VIEW}')")
     fun getUsers(
@@ -56,9 +65,16 @@ class UsersController(
     @PreAuthorize("hasAuthority('${PermissionConstant.ADMIN_USERS_EDIT}')")
     @Transactional
     fun postUser(
-        @RequestBody @Valid postRequest: UserRequestDto
+        @RequestBody @Valid postRequest: UserRequestDto,
+        authentication: Authentication,
+        request: HttpServletRequest,
     ): ResponseEntity<UserDto> {
+        val ip = RequestUtils.ipFrom(request)
+        val userAgent = RequestUtils.userAgentFrom(request)
+        val executor = userRepository.findByEmail(authentication.name).orElseThrow() //should not be able to throw
+
         val new = postRequest.id == null
+        log.debug("Account {} attempt from userId={} ip={} user_agent={}", if (new) "creation" else "update", executor.id, ip, userAgent)
 
         var user = if (new) {
             User(postRequest.email, "")
@@ -74,6 +90,11 @@ class UsersController(
         user.name = postRequest.name
         user.roles = roleRepository.findAllById(postRequest.roles).toMutableSet()
         user = userRepository.save(user)
+
+        if (new)
+            authLogService.log(AuthLog.AuthLogAction.CREATE, AuthLog.AuthLogResult.SUCCESS, "Created by userId=${executor.id}", ip, userAgent, user)
+        else
+            authLogService.log(AuthLog.AuthLogAction.UPDATE, AuthLog.AuthLogResult.SUCCESS, "Updated by userId=${executor.id}", ip, userAgent, user)
 
         if (Parse.nullOrEmpty(postRequest.password))
             return ResponseEntity.status(HttpStatus.OK).body(user.toDto())

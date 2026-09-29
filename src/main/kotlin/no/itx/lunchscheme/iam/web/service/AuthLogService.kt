@@ -43,6 +43,11 @@ class AuthLogService(
         if (userAgent != null)
             logData += "user_agent" to "\"$userAgent\""
 
-        log.info(logData.joinToString(" ", transform = { (key,value) -> "$key=$value" }))
+        val message = logData.joinToString(" ", transform = { (key,value) -> "$key=$value" })
+
+        when (result) {
+            AuthLog.AuthLogResult.SUCCESS -> log.info(message)
+            AuthLog.AuthLogResult.FAILURE -> log.warn(message)
+        }
     }
 }
