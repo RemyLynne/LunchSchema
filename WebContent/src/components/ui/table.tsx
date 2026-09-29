@@ -5,7 +5,7 @@ export function Table({ className, ...props }: ComponentProps<"table">) {
   return (
     <div
       data-slot="table-container"
-      className="relative w-full overflow-x-auto"
+      className="relative w-full overflow-x-auto rounded-lg border"
     >
       <table
         data-slot="table"
@@ -20,7 +20,10 @@ export function TableHeader({ className, ...props }: ComponentProps<"thead">) {
   return (
     <thead
       data-slot="table-header"
-      className={cn("[&_tr]:border-b", className)}
+      className={cn(
+        "bg-muted/50 [&_tr]:border-b",
+        className
+      )}
       {...props}
     />
   )
