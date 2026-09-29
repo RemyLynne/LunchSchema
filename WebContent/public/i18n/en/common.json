@@ -1,9 +1,11 @@
 {
 	"actions": {
+		"action": "Action",
 		"cancel": "Cancel",
 		"close": "Close",
 		"create": "Create",
 		"deactivate": "Deactivate",
+		"edit": "Edit",
 		"reactivate": "Reactivate",
 		"save": "Save"
 	},

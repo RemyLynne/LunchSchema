@@ -1,9 +1,11 @@
 {
 	"actions": {
+		"action": "Handling",
 		"cancel": "Avbryt",
 		"close": "Lukk",
 		"create": "Opprett",
 		"deactivate": "Deaktiver",
+		"edit": "Rediger",
 		"reactivate": "Reaktiver",
 		"save": "Lagre"
 	},

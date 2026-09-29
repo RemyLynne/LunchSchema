@@ -112,6 +112,7 @@ function UserTable() {
           <TableHead>{t("auth:fields.email.label")}</TableHead>
           <TableHead>{t("auth:fields.role.label")}</TableHead>
           <TableHead>{t("auth:user.status.label")}</TableHead>
+          <TableHead className="text-end">{t("common:actions.action")}</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -145,12 +146,15 @@ function UserTable() {
                 <Badge variant="success">{t("auth:user.status.enabled")}</Badge>
               )}
             </TableCell>
+            <TableCell className="text-end">
+              <Button variant="outline">{t("common:actions.edit")}</Button>
+            </TableCell>
           </TableRow>
         ))}
       </TableBody>
       <TableFooter>
         <TableRow>
-          <TableCell colSpan={4}>
+          <TableCell colSpan={5}>
             <div className="flex justify-between items-center">
               <div>
                 <BasicPagination min={1} max={totalPages} value={page} setValue={setPage}/>
