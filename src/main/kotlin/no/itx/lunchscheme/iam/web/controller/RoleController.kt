@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@RequestMapping("$API_BASE/roles")
+@RequestMapping("$API_BASE/admin/roles")
 class RoleController(
     private val roleRepository: RoleRepository
 ) {

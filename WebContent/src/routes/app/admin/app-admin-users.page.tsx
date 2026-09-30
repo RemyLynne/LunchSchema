@@ -67,7 +67,7 @@ function UserTable() {
     const controller = new AbortController()
 
     const fetch = async () => {
-      const res = await api.get(`/api/users?size=${debouncedRowsPerPage}&page=${debouncedPage-1}`, controller.signal)
+      const res = await api.get(`/api/admin/users?size=${debouncedRowsPerPage}&page=${debouncedPage-1}`, controller.signal)
       if (controller.signal.aborted) return
 
       if (isApiError(res)) {
@@ -238,7 +238,7 @@ function UserAdminPopup({user, setUser, close}: UserAdminPopupProps) {
   })
 
   const onSubmit: SubmitHandler<FormValues> = async ({confirmPassword: _confirmPassword, roles, ...data}) => {
-    const res = await api.post("/api/users", {
+    const res = await api.post("/api/admin/users", {
       ...data,
       roles: roles.map(role => role.id)
     })
@@ -260,7 +260,7 @@ function UserAdminPopup({user, setUser, close}: UserAdminPopupProps) {
   }
 
   const deactivate = useCallback(async () => {
-    const res = await api.post(`/api/users/${user!.id}/deactivate`, {})
+    const res = await api.post(`/api/admin/users/${user!.id}/deactivate`, {})
 
     if (isApiError(res) && res.error)
       ToastManager.add({
@@ -273,7 +273,7 @@ function UserAdminPopup({user, setUser, close}: UserAdminPopupProps) {
   }, [close, setUser, t, user])
 
   const reactivate = useCallback(async () => {
-    const res = await api.post(`/api/users/${user!.id}/reactivate`, {})
+    const res = await api.post(`/api/admin/users/${user!.id}/reactivate`, {})
 
     if (isApiError(res) && res.error)
       ToastManager.add({

@@ -16,7 +16,7 @@ export function useRoles() {
 }
 
 async function fetchRoles(): Promise<Role[] | null> {
-  const res = await api.get("/api/roles")
+  const res = await api.get("/api/admin/roles")
 
   if (res.code === 401 || res.code === 403) return null
 

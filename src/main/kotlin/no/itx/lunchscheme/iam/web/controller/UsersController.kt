@@ -35,7 +35,7 @@ import org.springframework.web.bind.annotation.RestController
 import java.time.Instant
 
 @RestController
-@RequestMapping("$API_BASE/users")
+@RequestMapping("$API_BASE/admin/users")
 class UsersController(
     private val userRepository: UserRepository,
     private val userCredentialRepository: UserCredentialRepository,
