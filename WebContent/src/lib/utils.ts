@@ -12,3 +12,10 @@ export function getInitials(name = ""): string {
 
   return (initial(first) + initial(last)).toUpperCase()
 }
+
+// Returns a new array with item toggled in the array (removed/addedd)
+export function toggled<T>(array: T[], item: T): T[] {
+  return array.includes(item)
+    ? array.filter(i => i !== item)
+    : [...array, item]
+}

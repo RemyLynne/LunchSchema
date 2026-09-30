@@ -74,7 +74,7 @@ export const SIDEBAR_ROUTES: SidebarRoutes = [
         titleKey: "Overview",
         path: "/overview",
         icon: LayoutList,
-        canAccess: user => user != null && hasPermission(user, permissionConstants.OVERVIEW_VIEW)
+        canAccess: user => hasPermission(user, permissionConstants.OVERVIEW_VIEW)
       }
     ]
   },
@@ -85,13 +85,13 @@ export const SIDEBAR_ROUTES: SidebarRoutes = [
         titleKey: "Menu",
         path: "/admin/menu",
         icon: ChefHat,
-        canAccess: user => user != null && hasPermission(user, permissionConstants.ADMIN_MENU_VIEW),
+        canAccess: user => hasPermission(user, permissionConstants.ADMIN_MENU_VIEW),
       },
       {
         titleKey: "Users",
         path: "/admin/users",
         icon: UserCog,
-        canAccess: user => user != null && hasPermission(user, permissionConstants.ADMIN_USERS_VIEW)
+        canAccess: user => hasPermission(user, permissionConstants.ADMIN_USERS_VIEW)
       }
     ]
   }

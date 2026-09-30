@@ -13,6 +13,28 @@
 		"name": "Lunch scheme"
 	},
 	"dangerZone": "Danger zone",
+	"day": [
+		{
+			"name": "Monday",
+			"short": "Mon"
+		},
+		{
+			"name": "Tuesday",
+			"short": "Tue"
+		},
+		{
+			"name": "Wednesday",
+			"short": "Wed"
+		},
+		{
+			"name": "Thursday",
+			"short": "Thu"
+		},
+		{
+			"name": "Friday",
+			"short": "Fri"
+		}
+	],
 	"errors": {
 		"network": "Network error",
 		"unknown": "Unknown error"

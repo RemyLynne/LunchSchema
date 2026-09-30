@@ -38,7 +38,7 @@ export default function AppAdminUsersPage() {
     <div className="flex flex-col gap-4">
       <div className="flex justify-between">
         <h1 className="text-3xl font-semibold">{t("auth:user.labelPlural")}</h1>
-        {hasPermission(user.data!, permissionConstants.ADMIN_USERS_EDIT) && (
+        {hasPermission(user.data, permissionConstants.ADMIN_USERS_EDIT) && (
           <Popup
             trigger={<Button><Plus/>{t("auth:user.create")}</Button>}
             title={t("auth:user.create")}
@@ -94,7 +94,7 @@ function UserTable() {
   const replaceUser = useCallback((newUser: User) => {
     setUsers((prev) => {
       const index = prev.findIndex(u => u.id === newUser.id)
-      if (index === -1) return prev
+      if (index === -1) return [...prev, newUser]
 
       return [
         ...prev.slice(0, index),
@@ -300,7 +300,7 @@ function UserAdminPopup({user, setUser, close}: UserAdminPopupProps) {
                 id={field.name}
                 type="text"
                 aria-invalid={fieldState.invalid}
-                disabled={!hasPermission(me.data!, permissionConstants.ADMIN_USERS_EDIT)}
+                disabled={!hasPermission(me.data, permissionConstants.ADMIN_USERS_EDIT)}
               />
               {fieldState.error?.message && (
                 <FieldError>{t(fieldState.error.message)}</FieldError>
@@ -320,7 +320,7 @@ function UserAdminPopup({user, setUser, close}: UserAdminPopupProps) {
                 type="email"
                 placeholder="user@example.com"
                 aria-invalid={fieldState.invalid}
-                disabled={!hasPermission(me.data!, permissionConstants.ADMIN_USERS_EDIT) || user?.id != null}
+                disabled={!hasPermission(me.data, permissionConstants.ADMIN_USERS_EDIT) || user?.id != null}
               />
               {fieldState.error?.message && (
                 <FieldError>{t(fieldState.error.message)}</FieldError>
@@ -328,7 +328,7 @@ function UserAdminPopup({user, setUser, close}: UserAdminPopupProps) {
             </Field>
           )}
         />
-        {hasPermission(me.data!, permissionConstants.ADMIN_USERS_EDIT) && (
+        {hasPermission(me.data, permissionConstants.ADMIN_USERS_EDIT) && (
           <>
             <Controller
               name="password"
@@ -381,7 +381,6 @@ function UserAdminPopup({user, setUser, close}: UserAdminPopupProps) {
                   value={field.value}
                   onValueChange={field.onChange}
                   isItemEqualToValue={(a,b) => a.id === b.id}
-                  itemToStringLabel={(role) => translateText(role.title)}
                 >
                   <SelectTrigger
                     id={field.name}
@@ -401,7 +400,7 @@ function UserAdminPopup({user, setUser, close}: UserAdminPopupProps) {
                       <SelectItem
                         key={role.id}
                         value={role}
-                        disabled={!hasPermission(me.data!, permissionConstants.ADMIN_USERS_EDIT)  || role.id! <= (getHighestRole(me.data!.roles ?? [])?.id??Number.MAX_VALUE)}
+                        disabled={!hasPermission(me.data, permissionConstants.ADMIN_USERS_EDIT)  || role.id! <= (getHighestRole(me.data!.roles ?? [])?.id??Number.MAX_VALUE)}
                       >
                         {translateText(role.title)}
                       </SelectItem>
@@ -415,7 +414,7 @@ function UserAdminPopup({user, setUser, close}: UserAdminPopupProps) {
             )}
           />
         )}
-        {hasPermission(me.data!, permissionConstants.ADMIN_USERS_EDIT) && user?.id && user.id != me.data!.id && (
+        {hasPermission(me.data, permissionConstants.ADMIN_USERS_EDIT) && user?.id && user.id != me.data!.id && (
           <Field className="mt-2">
             <Card variant="destructive">
               <CardHeader>
@@ -454,9 +453,9 @@ function UserAdminPopup({user, setUser, close}: UserAdminPopupProps) {
               type="button"
               onClick={close}
             >
-              {t(hasPermission(me.data!, permissionConstants.ADMIN_USERS_EDIT) ? "common:actions.cancel" : "common:actions.close")}
+              {t(hasPermission(me.data, permissionConstants.ADMIN_USERS_EDIT) ? "common:actions.cancel" : "common:actions.close")}
             </Button>
-            {hasPermission(me.data!, permissionConstants.ADMIN_USERS_EDIT) && (
+            {hasPermission(me.data, permissionConstants.ADMIN_USERS_EDIT) && (
               <Button type="submit" disabled={!isValid}>{t(user?.id ? "common:actions.save" : "common:actions.create")}</Button>
             )}
           </div>

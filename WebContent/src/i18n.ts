@@ -3,6 +3,9 @@ import I18NextHttpBackend from "i18next-http-backend"
 import {initReactI18next} from "react-i18next"
 import LanguageDetector from "i18next-browser-languagedetector"
 
+export const DEFAULT_LANGUAGE = "en"
+export const SUPPORTED_LANGUAGES = ["no", "en"]
+
 const LANGUAGE_MAP: Record<string, string[]> = {
   "no": ["no", "nb", "nn"]
 }
@@ -25,15 +28,15 @@ void i18next
   .use(I18NextHttpBackend)
   .use(initReactI18next)
   .init({
-    supportedLngs: ["en", "no"],
-    fallbackLng: "en",
+    supportedLngs: SUPPORTED_LANGUAGES,
+    fallbackLng: DEFAULT_LANGUAGE,
     nonExplicitSupportedLngs: true,
     load: "languageOnly",
     detection: {
       order: ["navigator"],
       convertDetectedLanguage
     },
-    ns: ["common", "auth"],
+    ns: ["common", "auth", "lunch"],
     defaultNS: "common",
     backend: {
       loadPath: "/i18n/{{lng}}/{{ns}}.json"

@@ -8,8 +8,10 @@ const cardVariants = cva(
     variants: {
       variant: {
         default: "bg-card text-card-foreground ring-foreground/10",
+        secondary: "bg-background text-foreground ring-foreground/10",
         destructive: "bg-destructive/10 text-destructive ring-destructive/50",
-        success: "bg-success/10 text-success ring-success/50"
+        success: "bg-success/10 text-success ring-success/50",
+        outline: "bg-transparent text-card-foreground ring-foreground/10"
       },
     },
     defaultVariants: {

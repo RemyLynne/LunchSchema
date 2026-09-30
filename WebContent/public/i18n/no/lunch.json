@@ -1,0 +1,37 @@
+{
+	"availability": {
+		"current": "Nåværende",
+		"label": "Tilgjengelige dager",
+		"planned": "Planlagt"
+	},
+	"billing": {
+		"each": {
+			"day": "Per dag",
+			"month": "Per måned"
+		},
+		"period": {
+			"fieldLabel": "Faktureringsperiode"
+		},
+		"price": {
+			"current": "Nåværende pris",
+			"fieldLabel": "Pris ({{unit}})",
+			"planned": "Planlagt pris"
+		}
+	},
+	"category": {
+		"fieldLabel": "Navn på kategori",
+		"label": "Kategori"
+	},
+	"menu": {
+		"choice": {
+			"create": "Opprett menyvalg",
+			"edit": "Rediger menyvalg"
+		},
+		"label": "Meny"
+	},
+	"overview": {
+		"week": {
+			"label": "Ukesoversikt"
+		}
+	}
+}

@@ -13,6 +13,28 @@
 		"name": "Lunsjordning"
 	},
 	"dangerZone": "Faresone",
+	"day": [
+		{
+			"name": "Mandag",
+			"short": "Man"
+		},
+		{
+			"name": "Tirsdag",
+			"short": "Tir"
+		},
+		{
+			"name": "Onsdag",
+			"short": "Ons"
+		},
+		{
+			"name": "Torsdag",
+			"short": "Tor"
+		},
+		{
+			"name": "Fredag",
+			"short": "Fre"
+		}
+	],
 	"errors": {
 		"network": "Nettverksfeil",
 		"unknown": "Ukjent feil"

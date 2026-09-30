@@ -1,0 +1,37 @@
+{
+	"availability": {
+		"current": "Current",
+		"label": "Available days",
+		"planned": "Planned"
+	},
+	"billing": {
+		"each": {
+			"day": "Each day",
+			"month": "Each month"
+		},
+		"period": {
+			"fieldLabel": "Billing period"
+		},
+		"price": {
+			"current": "Current price",
+			"fieldLabel": "Price ({{unit}})",
+			"planned": "Planned price"
+		}
+	},
+	"category": {
+		"fieldLabel": "Category name",
+		"label": "Category"
+	},
+	"menu": {
+		"choice": {
+			"create": "Create menu option",
+			"edit": "Edit menu option"
+		},
+		"label": "Menu"
+	},
+	"overview": {
+		"week": {
+			"label": "Weekly overview"
+		}
+	}
+}

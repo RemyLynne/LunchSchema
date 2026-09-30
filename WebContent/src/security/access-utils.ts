@@ -9,10 +9,13 @@ function getPermissionSet(user: User): Set<string> {
 export type PermissionMode = "all" | "any"
 
 export function hasPermission(
-  user: User,
+  user: User | null | undefined,
   names: string | string[],
   mode: PermissionMode = "all"
 ): boolean {
+  if (user == null)
+    return false
+
   const required = Array.isArray(names) ? names : [names]
   const permissions = getPermissionSet(user)
 
