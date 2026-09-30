@@ -430,13 +430,13 @@ function UserAdminPopup({user, setUser, close}: UserAdminPopupProps) {
                     trigger={<Button size="sm" variant="destructive">{t(user.disabled ? "common:actions.reactivate" : "common:actions.deactivate")}</Button>}
                     title={t(user.disabled ? "auth:user.prompt.reactivate.confirm.title" : "auth:user.prompt.deactivate.confirm.title")}
                     content={
-                    <span>
-                      <Trans
-                        i18nKey={user.disabled ? "auth:user.prompt.reactivate.confirm.description" : "auth:user.prompt.deactivate.confirm.description"}
-                        values={{email: user.email}}
-                        components={{ bold: <strong/> }}
-                      />
-                    </span>
+                      <span>
+                        <Trans
+                          i18nKey={user.disabled ? "auth:user.prompt.reactivate.confirm.description" : "auth:user.prompt.deactivate.confirm.description"}
+                          values={{email: user.email}}
+                          components={{ bold: <strong/> }}
+                        />
+                      </span>
                     }
                     confirmButtonText={t(user.disabled ? "common:actions.reactivate" : "common:actions.deactivate")}
                     callback={user.disabled ? reactivate : deactivate}
