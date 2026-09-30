@@ -48,5 +48,13 @@ class LunchBilling (
                 DAY -> BillingDto.BillingPeriodDto.day
                 MONTH -> BillingDto.BillingPeriodDto.month
             }
+
+        companion object {
+            fun fromDto(dto: BillingDto.BillingPeriodDto) =
+                when (dto) {
+                    BillingDto.BillingPeriodDto.day -> DAY
+                    BillingDto.BillingPeriodDto.month -> MONTH
+                }
+        }
     }
 }

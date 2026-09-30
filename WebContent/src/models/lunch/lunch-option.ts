@@ -7,8 +7,8 @@ export const lunchOptionSchema = z.object({
   name: textSchema,
   currentBilling: billingDefinitionSchema.nullish(),
   newBilling: billingDefinitionSchema.nullish(),
-  currentAvailableDays: z.array(z.number().min(0).max(4)),
-  newAvailableDays: z.array(z.number().min(0).max(4)),
+  currentAvailableDays: z.array(z.number().min(0).max(6)),
+  newAvailableDays: z.array(z.number().min(0).max(6)),
 })
 
 export type LunchOption = z.infer<typeof lunchOptionSchema>

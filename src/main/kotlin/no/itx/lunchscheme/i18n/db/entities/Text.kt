@@ -38,4 +38,11 @@ class Text(
     var translations: MutableMap<String, String> = mutableMapOf()
 
     override fun toDto() = TextDto(id, systemKey, content, translations.toMap())
+
+    companion object {
+        fun fromDto(dto: TextDto) = Text(dto.content).apply {
+            id = dto.id
+            translations = dto.translations.toMutableMap()
+        }
+    }
 }

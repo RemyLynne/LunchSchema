@@ -4,7 +4,7 @@ import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/c
 import {Badge} from "@/components/ui/badge"
 import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card"
 import {type LunchOption, lunchOptionSchema} from "@/models/lunch/lunch-option"
-import {translateText} from "@/models/i18n/text"
+import {textSchema, translateText} from "@/models/i18n/text"
 import {cn, toggled} from "@/lib/utils"
 import {useTranslation} from "react-i18next"
 import {useUser} from "@/hooks/use-user"
@@ -13,15 +13,16 @@ import {permissionConstants} from "@/security/permission.constants"
 import {Popup} from "@/components/popup"
 import {Field, FieldError, FieldGroup, FieldLabel} from "@/components/ui/field"
 import {Input} from "@/components/ui/input"
-import {type BillingPeriod, billingPeriodSchema} from "@/models/lunch/billing-definition"
+import {billingDefinitionSchema, type BillingPeriod, billingPeriodSchema} from "@/models/lunch/billing-definition"
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select"
 import {I18nInput} from "@/components/i18n-input"
 import {Controller, type SubmitHandler, useForm} from "react-hook-form"
 import {zodResolver} from "@hookform/resolvers/zod"
 import {useMenu} from "@/hooks/use-menu"
 import {queryClient} from "@/lib/query-client"
-import {api, isApiError} from "@/lib/api.ts";
-import {getAppText} from "@/lib/app-text.ts";
+import {api, isApiError} from "@/lib/api"
+import {getAppText} from "@/lib/app-text"
+import {z} from "zod"
 
 export default function AppAdminMenuPage() {
   const { t } = useTranslation()
@@ -201,13 +202,23 @@ interface MenuAdminPopupProps {
   close: () => void
 }
 
+const schema = z
+  .object({
+    id: z.number().nullish(),
+    name: textSchema,
+    billing: billingDefinitionSchema,
+    availableDays: z.array(z.number().min(0).max(6))
+  })
+
+type FormValues = z.infer<typeof schema>
+
 function MenuAdminPopup({option, close}: MenuAdminPopupProps) {
   const { t } = useTranslation()
   const user = useUser()
   const menu = useMenu()
 
   const { control: formControl, handleSubmit, setError, formState: { errors, isValid } } = useForm({
-    resolver: zodResolver(lunchOptionSchema),
+    resolver: zodResolver(schema),
     mode: "onChange",
     defaultValues: {
       id: option?.id,
@@ -215,17 +226,15 @@ function MenuAdminPopup({option, close}: MenuAdminPopupProps) {
         content: "",
         translations: {}
       },
-      currentBilling: option?.currentBilling,
-      newBilling: option?.newBilling ?? {
+      billing: option?.newBilling ?? {
         price: 0,
         billingPeriod: "day"
       },
-      currentAvailableDays: option?.currentAvailableDays ?? [],
-      newAvailableDays: option?.newAvailableDays ?? days,
+      availableDays: option?.newAvailableDays ?? days,
     }
   })
 
-  const onSubmit: SubmitHandler<LunchOption> = async (data) => {
+  const onSubmit: SubmitHandler<FormValues> = async (data) => {
     const res = await api.post("/api/menu", data)
 
     if (isApiError(res)) {
@@ -240,16 +249,17 @@ function MenuAdminPopup({option, close}: MenuAdminPopupProps) {
       return
     }
 
-    const index = menu.data?.findIndex(item => item.id === data.id) ?? -1
+    const index = menu.data?.findIndex(item => item.id === parsed.data.id) ?? -1
     let rtn: LunchOption[]
     if (index === -1)
-      rtn = [...menu.data??[], data]
+      rtn = [...menu.data??[], parsed.data]
     else
       rtn = [
         ...menu.data!.slice(0, index),
-        data,
+        parsed.data,
         ...menu.data!.slice(index+1)
       ]
+
     queryClient.setQueryData(["menu"], rtn)
     close()
   }
@@ -278,7 +288,7 @@ function MenuAdminPopup({option, close}: MenuAdminPopupProps) {
         ></Controller>
         <div className="grid grid-cols-2 gap-4">
           <Controller
-            name="newBilling.price"
+            name="billing.price"
             control={formControl}
             render={({field, fieldState}) => (
               <Field data-invalid={fieldState.invalid}>
@@ -296,7 +306,7 @@ function MenuAdminPopup({option, close}: MenuAdminPopupProps) {
             )}
           />
           <Controller
-            name="newBilling.billingPeriod"
+            name="billing.billingPeriod"
             control={formControl}
             render={({field, fieldState}) => (
               <Field data-invalid={fieldState.invalid}>
@@ -335,7 +345,7 @@ function MenuAdminPopup({option, close}: MenuAdminPopupProps) {
           />
         </div>
         <Controller
-          name="newAvailableDays"
+          name="availableDays"
           control={formControl}
           render={({field, fieldState}) => (
             <Field data-invalid={fieldState.invalid}>
