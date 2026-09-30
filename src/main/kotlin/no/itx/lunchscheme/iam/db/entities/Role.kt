@@ -20,7 +20,14 @@ class Role(
     @JoinColumn(name = "title_text_id", nullable = false)
     var title: Text,
     @Column(name = "sort", nullable = false)
-    var sort: Int
+    var sort: Int,
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+        name = "roles_permissions",
+        joinColumns = [JoinColumn(name = "role_id")],
+        inverseJoinColumns = [JoinColumn(name = "permission_id")],
+    )
+    var permissions: MutableSet<Permission> = mutableSetOf()
 ) : WithResponseDto<RoleDto> {
     @Id
     @Column(name = "id", nullable = false, updatable = false)
@@ -29,13 +36,6 @@ class Role(
     @Column(name = "system_key", length = 50, unique = true)
     var systemKey: String? = null
         protected set
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-        name = "roles_permissions",
-        joinColumns = [JoinColumn(name = "role_id")],
-        inverseJoinColumns = [JoinColumn(name = "permission_id")],
-    )
-    var permissions: MutableSet<Permission> = mutableSetOf()
 
     override fun toDto() = RoleDto(id, systemKey, title.toDto(), sort, permissions.map(Permission::toDto).toSet())
 }

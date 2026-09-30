@@ -23,6 +23,15 @@ class User(
     var email: String,
     @Column(name = "name", nullable = false, unique = true)
     var name: String,
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+        name = "users_roles",
+        joinColumns = [JoinColumn(name = "user_id")],
+        inverseJoinColumns = [JoinColumn(name = "role_id")],
+    )
+    var roles: MutableSet<Role> = mutableSetOf(),
+    @Column(nullable = false)
+    var disabled: Boolean = false
 ) : WithResponseDto<UserDto> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,15 +46,6 @@ class User(
     @Column(name = "updated_at", nullable = false)
     var updatedAt: Instant? = null
         protected set
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-        name = "users_roles",
-        joinColumns = [JoinColumn(name = "user_id")],
-        inverseJoinColumns = [JoinColumn(name = "role_id")],
-    )
-    var roles: MutableSet<Role> = mutableSetOf()
-    @Column(nullable = false)
-    var disabled: Boolean = false
 
     override fun toDto() = UserDto(id, email, name, createdAt, updatedAt, roles.map(Role::toDto).toSet(), disabled)
 }
