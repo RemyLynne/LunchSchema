@@ -7,7 +7,7 @@ export type BillingPeriod = z.infer<typeof billingPeriodSchema>
 export const billingDefinitionSchema = z.object({
   price: z.preprocess(
     (v: any) => (v === "" || v == null ? undefined : Number(String(v).replace(",", "."))),
-    z.number().positive(),
+    z.number().nonnegative(),
   ),
   billingPeriod: billingPeriodSchema,
 })

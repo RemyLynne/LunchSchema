@@ -20,6 +20,8 @@ import {Controller, type SubmitHandler, useForm} from "react-hook-form"
 import {zodResolver} from "@hookform/resolvers/zod"
 import {useMenu} from "@/hooks/use-menu"
 import {queryClient} from "@/lib/query-client"
+import {api, isApiError} from "@/lib/api.ts";
+import {getAppText} from "@/lib/app-text.ts";
 
 export default function AppAdminMenuPage() {
   const { t } = useTranslation()
@@ -224,9 +226,6 @@ function MenuAdminPopup({option, close}: MenuAdminPopupProps) {
   })
 
   const onSubmit: SubmitHandler<LunchOption> = async (data) => {
-    console.log(data) //TODO: api call
-
-    /*
     const res = await api.post("/api/menu", data)
 
     if (isApiError(res)) {
@@ -234,13 +233,12 @@ function MenuAdminPopup({option, close}: MenuAdminPopupProps) {
       return
     }
 
-    const parsed = LunchOption.safeParse(await res.response.json().catch(() => null))
+    const parsed = lunchOptionSchema.safeParse(await res.response.json().catch(() => null))
     if (!parsed.success) {
       console.error(parsed.error)
       setError("root", { message: t("common:errors.unknown")})
       return
     }
-     */
 
     const index = menu.data?.findIndex(item => item.id === data.id) ?? -1
     let rtn: LunchOption[]

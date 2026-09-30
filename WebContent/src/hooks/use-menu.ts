@@ -1,5 +1,9 @@
-import type {LunchOption} from "@/models/lunch/lunch-option.ts";
-import {useQuery} from "@tanstack/react-query";
+import {type LunchOption, lunchOptionSchema} from "@/models/lunch/lunch-option"
+import {useQuery} from "@tanstack/react-query"
+import {api, isApiError} from "@/lib/api"
+import {ToastManager} from "@/lib/toast"
+import {getAppText} from "@/lib/app-text"
+import {t} from "i18next"
 
 export const menuQuery = {
   queryKey: ["menu"],
@@ -12,65 +16,28 @@ export function useMenu() {
 }
 
 async function fetchMenu(): Promise<LunchOption[] | null> {
-  console.log("fetch")
+  const res = await api.get("/api/menu")
 
-  return Promise.resolve([
-    {
-      id: 1,
-      name: {
-        content: "common_bread",
-        translations: {
-          en: "Bread",
-          no: "Brød"
-        }
-      },
-      currentBilling: {
-        price: 30,
-        billingPeriod: "day"
-      },
-      newBilling: {
-        price: 40,
-        billingPeriod: "day"
-      },
-      currentAvailableDays: [0,1,2,3,4],
-      newAvailableDays: [1,3]
-    },
-    {
-      id: 2,
-      name: {
-        content: "common_toast",
-        translations: {
-          en: "Toast",
-          no: "Smørbrød"
-        }
-      },
-      currentBilling: null,
-      newBilling: {
-        price: 100,
-        billingPeriod: "month"
-      },
-      currentAvailableDays: [],
-      newAvailableDays: [1]
-    },
-    {
-      id: 3,
-      name: {
-        content: "common_hot_food",
-        translations: {
-          en: "Hot food",
-          no: "Varmmat"
-        }
-      },
-      currentBilling: {
-        price: 150,
-        billingPeriod: "month"
-      },
-      newBilling: {
-        price: 200,
-        billingPeriod: "month"
-      },
-      currentAvailableDays: [2],
-      newAvailableDays: [2]
-    }
-  ])
+  if (res.code === 401 || res.code === 403) return null
+
+  if (isApiError(res)) {
+    if (res.error)
+      ToastManager.add({
+        type: "error",
+        title: getAppText(res.error, t)
+      })
+    return null
+  }
+
+  const parsed = lunchOptionSchema.array().safeParse(await res.response.json().catch(() => null))
+  if (!parsed.success) {
+    console.error(parsed.error)
+    ToastManager.add({
+      type: "error",
+      title: t("common:errors.unknown"),
+    })
+    return null
+  }
+
+  return parsed.data
 }
