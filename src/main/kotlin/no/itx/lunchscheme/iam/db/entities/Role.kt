@@ -3,6 +3,8 @@ package no.itx.lunchscheme.iam.db.entities
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.FetchType
+import jakarta.persistence.GeneratedValue
+import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.JoinColumn
 import jakarta.persistence.JoinTable
@@ -30,6 +32,7 @@ class Role(
     var permissions: MutableSet<Permission> = mutableSetOf()
 ) : WithResponseDto<RoleDto> {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false, updatable = false)
     var id: Int? = null
         protected set
