@@ -16,7 +16,7 @@ import no.itx.lunchscheme.web.WithResponseDto
 @Entity
 @Table(name = "roles")
 class Role(
-    @OneToOne(optional = false)
+    @OneToOne(optional = false, orphanRemoval = true)
     @JoinColumn(name = "title_text_id", nullable = false)
     var title: Text,
     @Column(name = "sort", nullable = false)

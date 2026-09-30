@@ -15,7 +15,7 @@ import no.itx.lunchscheme.web.WithResponseDto
 class Permission(
     @Column(name = "name", length = 150, unique = true, nullable = false)
     var name: String,
-    @OneToOne(optional = false)
+    @OneToOne(optional = false, orphanRemoval = true)
     @JoinColumn(name = "title_text_id", nullable = false)
     var title: Text
 ) : WithResponseDto<PermissionDto> {
