@@ -32,6 +32,7 @@
 			"title": "Remove category"
 		}
 	},
+	"label": "lunch",
 	"menu": {
 		"choice": {
 			"create": "Create menu option",
@@ -44,7 +45,11 @@
 		"description": "Planned changes take effect at the start of the next month",
 		"title": "Menu"
 	},
+	"myChoices": {
+		"label": "My choices"
+	},
 	"overview": {
+		"label": "Overview",
 		"week": {
 			"label": "Weekly overview"
 		}

@@ -67,11 +67,11 @@ export const router = createBrowserRouter([
 
 export const SIDEBAR_ROUTES: SidebarRoutes = [
   {
-    titleKey: "Lunch",
+    titleKey: "lunch:label",
     items: [
-      { titleKey: "My choices", path: "/my-choices", icon: Utensils },
+      { titleKey: "lunch:myChoices.label", path: "/my-choices", icon: Utensils },
       {
-        titleKey: "Overview",
+        titleKey: "lunch:overview.label",
         path: "/overview",
         icon: LayoutList,
         canAccess: user => hasPermission(user, permissionConstants.OVERVIEW_VIEW)
@@ -79,16 +79,16 @@ export const SIDEBAR_ROUTES: SidebarRoutes = [
     ]
   },
   {
-    titleKey: "Admin",
+    titleKey: "auth:actions.admin",
     items: [
       {
-        titleKey: "Menu",
+        titleKey: "lunch:menu.title",
         path: "/admin/menu",
         icon: ChefHat,
         canAccess: user => hasPermission(user, permissionConstants.ADMIN_MENU_VIEW),
       },
       {
-        titleKey: "Users",
+        titleKey: "auth:user.labelPlural",
         path: "/admin/users",
         icon: UserCog,
         canAccess: user => hasPermission(user, permissionConstants.ADMIN_USERS_VIEW)

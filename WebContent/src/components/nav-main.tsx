@@ -3,8 +3,10 @@ import {SidebarGroup, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, Sidebar
 import {Link, matchPath, useLocation} from "react-router"
 import {useMemo} from "react"
 import {useUser} from "@/hooks/use-user"
+import {useTranslation} from "react-i18next"
 
 export function NavMain() {
+  const { t } = useTranslation()
   const user = useUser()
   const {pathname} = useLocation()
 
@@ -20,7 +22,7 @@ export function NavMain() {
   return (
     <>{availableRoutes.map(group => (
       <SidebarGroup key={group.titleKey}>
-        <SidebarGroupLabel>{group.titleKey}</SidebarGroupLabel>
+        <SidebarGroupLabel>{t(group.titleKey)}</SidebarGroupLabel>
         <SidebarMenu>
           {group.items.map(item => (
             <SidebarMenuItem key={item.titleKey}>
@@ -29,7 +31,7 @@ export function NavMain() {
                 render={<Link to={item.path} />}
               >
                 <item.icon/>
-                <span>{item.titleKey}</span>
+                <span>{t(item.titleKey)}</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
           ))}

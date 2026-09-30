@@ -32,6 +32,7 @@
 			"title": "Fjern kategori"
 		}
 	},
+	"label": "Lunsj",
 	"menu": {
 		"choice": {
 			"create": "Opprett menyvalg",
@@ -44,7 +45,11 @@
 		"description": "Planlagte endringer trer i kraft ved neste måned",
 		"title": "Meny"
 	},
+	"myChoices": {
+		"label": "Mine valg"
+	},
 	"overview": {
+		"label": "Oversikt",
 		"week": {
 			"label": "Ukesoversikt"
 		}
