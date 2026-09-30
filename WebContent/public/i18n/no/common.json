@@ -2,11 +2,13 @@
 	"actions": {
 		"action": "Handling",
 		"cancel": "Avbryt",
+		"cancelRemove": "Avbryt fjerning",
 		"close": "Lukk",
 		"create": "Opprett",
 		"deactivate": "Deaktiver",
 		"edit": "Rediger",
 		"reactivate": "Reaktiver",
+		"remove": "Fjern",
 		"save": "Lagre"
 	},
 	"app": {

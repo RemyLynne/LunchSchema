@@ -24,6 +24,8 @@ class LunchOption (
     @OneToOne(cascade = [CascadeType.ALL], optional = false, orphanRemoval = true)
     @JoinColumn(name = "title_text_id", nullable = false)
     var title: Text,
+    @Column(name = "remove_date")
+    var endDate: LocalDate?
 ) : WithResponseDto<LunchOptionResponseDto> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -46,6 +48,12 @@ class LunchOption (
         val currentAvailabilities = availabilities.filter { it.isWithin(date) }
         val newAvailabilities = availabilities.filter { it.isWithin(date.plusMonths(1)) }
 
+        val removalDate = if (endDate == null) null
+        else {
+            if (date.plusMonths(1).isAfter(endDate)) endDate
+            else null
+        }
+
         return LunchOptionResponseDto(
             id,
             title.toDto(),
@@ -53,6 +61,7 @@ class LunchOption (
             newBilling?.toDto(),
             currentAvailabilities.map { it.day.ordinal }.toSet(),
             newAvailabilities.map { it.day.ordinal }.toSet(),
+            removalDate
         )
     }
 
@@ -112,8 +121,7 @@ class LunchOption (
             .forEach {
                 it.endDate = if (!newAvailabilities.contains(it.day))
                     now.withDayOfMonth(now.lengthOfMonth())
-                else
-                    null
+                else null
             }
 
         //remove future availabilities that no longer exist

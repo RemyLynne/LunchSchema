@@ -6,23 +6,25 @@ import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card"
 import {type LunchOption, lunchOptionSchema} from "@/models/lunch/lunch-option"
 import {textSchema, translateText} from "@/models/i18n/text"
 import {cn, toggled} from "@/lib/utils"
-import {useTranslation} from "react-i18next"
+import {Trans, useTranslation} from "react-i18next"
 import {useUser} from "@/hooks/use-user"
 import {hasPermission} from "@/security/access-utils"
 import {permissionConstants} from "@/security/permission.constants"
 import {Popup} from "@/components/popup"
-import {Field, FieldError, FieldGroup, FieldLabel} from "@/components/ui/field"
+import {Field, FieldDescription, FieldError, FieldGroup, FieldLabel} from "@/components/ui/field"
 import {Input} from "@/components/ui/input"
 import {billingDefinitionSchema, type BillingPeriod, billingPeriodSchema} from "@/models/lunch/billing-definition"
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select"
 import {I18nInput} from "@/components/i18n-input"
 import {Controller, type SubmitHandler, useForm} from "react-hook-form"
 import {zodResolver} from "@hookform/resolvers/zod"
-import {useMenu} from "@/hooks/use-menu"
-import {queryClient} from "@/lib/query-client"
+import {replaceMenuItem, useMenu} from "@/hooks/use-menu"
 import {api, isApiError} from "@/lib/api"
 import {getAppText} from "@/lib/app-text"
 import {z} from "zod"
+import {ConfirmPopup} from "@/components/confirm-popup"
+import {useCallback} from "react"
+import {ToastManager} from "@/lib/toast"
 
 export default function AppAdminMenuPage() {
   const { t } = useTranslation()
@@ -32,12 +34,14 @@ export default function AppAdminMenuPage() {
     <div className="flex flex-col gap-4">
       <div className="flex justify-between">
         <div>
-          <h1 className="text-3xl font-semibold">{t("lunch:menu.label")}</h1>
+          <h1 className="text-3xl font-semibold">{t("lunch:menu.title")}</h1>
+          <p className="text-muted-foreground">{t("lunch:menu.description")}</p>
         </div>
         {hasPermission(user.data, permissionConstants.ADMIN_MENU_VIEW) && (
           <Popup
             trigger={<Button><Plus/>{t("lunch:menu.choice.create")}</Button>}
             title={t("lunch:menu.choice.create")}
+            description={t("lunch:menu.choice.description.create")}
           >
             {close => (<MenuAdminPopup close={close}/>)}
           </Popup>
@@ -77,6 +81,7 @@ function MenuList() {
                 <Popup
                   trigger={<button type="button" className="text-left font-medium outline-none after:absolute after:inset-0 after:content-['']">{translateText(option.name)}</button>}
                   title={t("lunch:menu.choice.edit")}
+                  description={t("lunch:menu.choice.description.edit")}
                 >
                   {close => (
                     <MenuAdminPopup
@@ -97,7 +102,7 @@ function MenuList() {
                 )}
               </TableCell>
               <TableCell>
-                {option.newBilling && (
+                {option.removalDate == null && option.newBilling && (
                   <>
                     <p>{option.newBilling.price} kr</p>
                     <p className="text-muted-foreground">
@@ -116,7 +121,7 @@ function MenuList() {
                   </div>
                   <div className="flex gap-1">
                     <p className="text-muted-foreground pe-1">{t("lunch:availability.planned")}</p>
-                    {option.newAvailableDays.sort().map(day => (
+                    {option.removalDate == null && option.newAvailableDays.sort().map(day => (
                       <Badge key={day} variant="secondary">{t(`common:day.${day}.short`)}</Badge>
                     ))}
                   </div>
@@ -156,6 +161,7 @@ function WeekOverview() {
                   <div className="flex flex-col gap-2 items-stretch">
                     {menu.data
                       .filter(option => option.currentAvailableDays.includes(day)||option.newAvailableDays.includes(day))
+                      .filter(option => option.removalDate == null || option.currentAvailableDays.includes(day))
                       .map(option => (
                         <Popup
                           key={option.id}
@@ -164,7 +170,7 @@ function WeekOverview() {
                               className={cn("justify-start",
                                 option.currentAvailableDays.includes(day)
                                   ? (
-                                    option.newAvailableDays.includes(day)
+                                    option.removalDate == null && option.newAvailableDays.includes(day)
                                       ? "bg-background! hover:bg-muted/10! border-border!"
                                       : "bg-destructive/10! border-destructive/30! text-destructive hover:bg-destructive/20! hover:border-destructive/40! hover:text-destructive"
                                   )
@@ -176,6 +182,7 @@ function WeekOverview() {
                             </Button>
                           }
                           title={t("lunch:menu.choice.edit")}
+                          description={t("lunch:menu.choice.description.edit")}
                         >
                           {close => (
                             <MenuAdminPopup
@@ -215,7 +222,6 @@ type FormValues = z.infer<typeof schema>
 function MenuAdminPopup({option, close}: MenuAdminPopupProps) {
   const { t } = useTranslation()
   const user = useUser()
-  const menu = useMenu()
 
   const { control: formControl, handleSubmit, setError, formState: { errors, isValid } } = useForm({
     resolver: zodResolver(schema),
@@ -249,20 +255,47 @@ function MenuAdminPopup({option, close}: MenuAdminPopupProps) {
       return
     }
 
-    const index = menu.data?.findIndex(item => item.id === parsed.data.id) ?? -1
-    let rtn: LunchOption[]
-    if (index === -1)
-      rtn = [...menu.data??[], parsed.data]
-    else
-      rtn = [
-        ...menu.data!.slice(0, index),
-        parsed.data,
-        ...menu.data!.slice(index+1)
-      ]
-
-    queryClient.setQueryData(["menu"], rtn)
+    replaceMenuItem(parsed.data)
     close()
   }
+
+
+
+  const remove = useCallback(async () => {
+    const res = await api.post(`/api/menu/${option!.id}/remove`, {})
+
+    if (isApiError(res) && res.error)
+      ToastManager.add({
+        type: "error",
+        title: getAppText(res.error, t)
+      })
+
+    const date = new Date()
+    date.setMonth(date.getMonth() + 1)
+    date.setDate(1)
+
+    replaceMenuItem({
+      ...option!,
+      removalDate: date.toDateString().split("T")[0]
+    })
+    close()
+  }, [close, option, t])
+
+  const cancelRemove = useCallback(async () => {
+    const res = await api.post(`/api/menu/${option!.id}/remove/cancel`, {})
+
+    if (isApiError(res) && res.error)
+      ToastManager.add({
+        type: "error",
+        title: getAppText(res.error, t)
+      })
+
+    replaceMenuItem({
+      ...option!,
+      removalDate: null
+    })
+    close()
+  }, [close, option, t])
 
   return (
     <form className="grid items-start gap-6" onSubmit={handleSubmit(onSubmit)}>
@@ -278,7 +311,7 @@ function MenuAdminPopup({option, close}: MenuAdminPopupProps) {
                 {...field}
                 id={field.name}
                 aria-invalid={fieldState.invalid}
-                disabled={!hasPermission(user.data, permissionConstants.ADMIN_MENU_EDIT)}
+                disabled={option?.removalDate != null || !hasPermission(user.data, permissionConstants.ADMIN_MENU_EDIT)}
               />
               {fieldState.error?.message && (
                 <FieldError>{t(fieldState.error.message)}</FieldError>
@@ -297,7 +330,7 @@ function MenuAdminPopup({option, close}: MenuAdminPopupProps) {
                   {...field}
                   id={field.name}
                   aria-invalid={fieldState.invalid}
-                  disabled={!hasPermission(user.data, permissionConstants.ADMIN_MENU_EDIT)}
+                  disabled={option?.removalDate != null || !hasPermission(user.data, permissionConstants.ADMIN_MENU_EDIT)}
                 />
                 {fieldState.error?.message && (
                   <FieldError>{t(fieldState.error.message)}</FieldError>
@@ -315,6 +348,7 @@ function MenuAdminPopup({option, close}: MenuAdminPopupProps) {
                   name={field.name}
                   value={field.value}
                   onValueChange={field.onChange}
+                  disabled={option?.removalDate != null}
                 >
                   <SelectTrigger
                     id={field.name}
@@ -357,6 +391,7 @@ function MenuAdminPopup({option, close}: MenuAdminPopupProps) {
                     className="grow"
                     variant={field.value.includes(day) ? "success" : "destructive"}
                     onClick={() => field.onChange(toggled(field.value, day))}
+                    disabled={option?.removalDate != null}
                   >
                     {t(`common:day.${day}.short`)}
                   </Button>
@@ -368,6 +403,38 @@ function MenuAdminPopup({option, close}: MenuAdminPopupProps) {
             </Field>
           )}
         />
+        {option?.id != null && (
+          <Field className="mt-2">
+            <FieldLabel>{t("lunch:category.remove.title")}</FieldLabel>
+            <FieldDescription>{t(option.removalDate ? "lunch:category.remove.cancel.description" : "lunch:category.remove.description")}</FieldDescription>
+            <div className="flex justify-start">
+              {option.removalDate == null ? (
+                <ConfirmPopup
+                  trigger={<Button variant={"destructive"}>{t("lunch:category.remove.title")}</Button>}
+                  title={t("lunch:category.remove.title")}
+                  content={
+                    <span>
+                      <Trans
+                        i18nKey="lunch:category.remove.confirm.description"
+                        values={{category: translateText(option.name)}}
+                        components={{ bold: <strong/> }}
+                      />
+                    </span>
+                  }
+                  confirmButtonText={t("common:actions.remove")}
+                  callback={remove}
+                />
+              ) : (
+                <Button
+                  variant={"secondary"}
+                  onClick={cancelRemove}
+                >
+                  {t("common:actions.cancelRemove")}
+                </Button>
+              )}
+            </div>
+          </Field>
+        )}
         <Field>
           <div className="flex justify-end gap-2">
             <Button
@@ -375,9 +442,9 @@ function MenuAdminPopup({option, close}: MenuAdminPopupProps) {
               type="button"
               onClick={close}
             >
-              {t(hasPermission(user.data, permissionConstants.ADMIN_USERS_EDIT) ? "common:actions.cancel" : "common:actions.close")}
+              {t(option?.removalDate == null && hasPermission(user.data, permissionConstants.ADMIN_USERS_EDIT) ? "common:actions.cancel" : "common:actions.close")}
             </Button>
-            {hasPermission(user.data, permissionConstants.ADMIN_USERS_EDIT) && (
+            {option?.removalDate == null && hasPermission(user.data, permissionConstants.ADMIN_USERS_EDIT) && (
               <Button type="submit" disabled={!isValid}>{t(option?.id ? "common:actions.save" : "common:actions.create")}</Button>
             )}
           </div>

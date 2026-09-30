@@ -4,6 +4,7 @@ import {api, isApiError} from "@/lib/api"
 import {ToastManager} from "@/lib/toast"
 import {getAppText} from "@/lib/app-text"
 import {t} from "i18next"
+import {queryClient} from "@/lib/query-client"
 
 export const menuQuery = {
   queryKey: ["menu"],
@@ -13,6 +14,23 @@ export const menuQuery = {
 
 export function useMenu() {
   return useQuery(menuQuery)
+}
+
+export function replaceMenuItem(menuItem: LunchOption) {
+  const data = queryClient.getQueryData(["menu"]) as LunchOption[]|null
+
+  const index = data?.findIndex(item => item.id === menuItem.id) ?? -1
+  let rtn: LunchOption[]
+  if (index === -1)
+    rtn = [...data??[], menuItem]
+  else
+    rtn = [
+      ...data!.slice(0, index),
+      menuItem,
+      ...data!.slice(index+1)
+    ]
+
+  queryClient.setQueryData(["menu"], rtn)
 }
 
 async function fetchMenu(): Promise<LunchOption[] | null> {

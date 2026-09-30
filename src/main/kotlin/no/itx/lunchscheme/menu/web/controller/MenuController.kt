@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -34,7 +35,7 @@ class MenuController(
     fun getMenu(): ResponseEntity<List<LunchOptionResponseDto>> {
         val now = LocalDate.now()
 
-        val options = lunchOptionRepository.findAll()
+        val options = lunchOptionRepository.findByEndDateIsNullOrEndDateAfter(now.minusDays(1))
             .filter { option ->
                 (option.billings.any { it.isWithin(now) } || option.billings.any { it.isWithin(now.plusMonths(1)) }) &&
                 (option.availabilities.any { it.isWithin(now) } || option.availabilities.any { it.isWithin(now.plusMonths(1)) })
@@ -52,10 +53,10 @@ class MenuController(
         val new = postRequest.id == null
 
         var option = if (new) {
-            val obj = LunchOption(Text(""))
+            val obj = LunchOption(Text(""), null)
             lunchOptionRepository.save(obj)//saving required before update
         } else {
-            lunchOptionRepository.findById(postRequest.id).orElseThrow {
+            lunchOptionRepository.findByIdAndEndDateIsNull(postRequest.id).orElseThrow {
                 HttpEndpointException(translationService.get("error.lunch.idNotFound", postRequest.id), HttpStatus.BAD_REQUEST)
             }
         }
@@ -67,5 +68,36 @@ class MenuController(
         option = lunchOptionRepository.save(option)
 
         return ResponseEntity.status(if (new) HttpStatus.CREATED else HttpStatus.OK).body(option.toDto())
+    }
+
+    @PostMapping("/{id}/remove")
+    @PreAuthorize("hasAuthority('${PermissionConstant.ADMIN_MENU_EDIT}')")
+    fun deactivate(
+        @PathVariable id: Int
+    ): ResponseEntity<Void> {
+        val option = lunchOptionRepository.findByIdAndEndDateMaybeAfter(id, LocalDate.now()).orElseThrow {
+            HttpEndpointException(translationService.get("error.lunch.idNotFound", id), HttpStatus.BAD_REQUEST)
+        }
+
+        val now = LocalDate.now()
+        option.endDate = now.plusMonths(1).withDayOfMonth(1)
+        lunchOptionRepository.save(option)
+
+        return ResponseEntity.status(HttpStatus.OK).body(null)
+    }
+
+    @PostMapping("/{id}/remove/cancel")
+    @PreAuthorize("hasAuthority('${PermissionConstant.ADMIN_MENU_EDIT}')")
+    fun reactivate(
+        @PathVariable id: Int
+    ): ResponseEntity<Void> {
+        val option = lunchOptionRepository.findByIdAndEndDateMaybeAfter(id, LocalDate.now()).orElseThrow {
+            HttpEndpointException(translationService.get("error.lunch.idNotFound", id), HttpStatus.BAD_REQUEST)
+        }
+
+        option.endDate = null
+        lunchOptionRepository.save(option)
+
+        return ResponseEntity.status(HttpStatus.OK).body(null)
     }
 }

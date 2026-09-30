@@ -20,14 +20,29 @@
 	},
 	"category": {
 		"fieldLabel": "Category name",
-		"label": "Category"
+		"label": "Category",
+		"remove": {
+			"cancel": {
+				"description": "The category is marked for removal, and will be removed at the start of the next month"
+			},
+			"confirm": {
+				"description": "\"<bold>{{category}}</bold>\" will be removed at the start of the next month"
+			},
+			"description": "The category will be removed at the start of the next month",
+			"title": "Remove category"
+		}
 	},
 	"menu": {
 		"choice": {
 			"create": "Create menu option",
+			"description": {
+				"create": "The option will become available at the start of next month",
+				"edit": "Changes will take effect at the start of the next month"
+			},
 			"edit": "Edit menu option"
 		},
-		"label": "Menu"
+		"description": "Planned changes take effect at the start of the next month",
+		"title": "Menu"
 	},
 	"overview": {
 		"week": {

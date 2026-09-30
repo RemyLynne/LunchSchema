@@ -20,14 +20,29 @@
 	},
 	"category": {
 		"fieldLabel": "Navn på kategori",
-		"label": "Kategori"
+		"label": "Kategori",
+		"remove": {
+			"cancel": {
+				"description": "Kategorien et markert for fjerning, og vil bli fjernet ved neste måned"
+			},
+			"confirm": {
+				"description": "\"<bold>{{category}}</bold>\" vil bli fjernet ved neste måned"
+			},
+			"description": "Kategorien vil bli fjernet ved neste måned",
+			"title": "Fjern kategori"
+		}
 	},
 	"menu": {
 		"choice": {
 			"create": "Opprett menyvalg",
+			"description": {
+				"create": "Valget vil bli tilgjengelig ved neste måned",
+				"edit": "Endringer trer i kraft ved neste måned"
+			},
 			"edit": "Rediger menyvalg"
 		},
-		"label": "Meny"
+		"description": "Planlagte endringer trer i kraft ved neste måned",
+		"title": "Meny"
 	},
 	"overview": {
 		"week": {

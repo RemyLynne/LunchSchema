@@ -1,6 +1,7 @@
 CREATE TABLE lunch_options (
     id            INT    AUTO_INCREMENT,
     title_text_id BIGINT NOT NULL,
+    remove_date   DATE   NULL,
     PRIMARY KEY (id),
     CONSTRAINT fk_lunch_option_title
         FOREIGN KEY (title_text_id) REFERENCES texts (id)

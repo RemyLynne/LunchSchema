@@ -2,11 +2,13 @@
 	"actions": {
 		"action": "Action",
 		"cancel": "Cancel",
+		"cancelRemove": "Cancel removal",
 		"close": "Close",
 		"create": "Create",
 		"deactivate": "Deactivate",
 		"edit": "Edit",
 		"reactivate": "Reactivate",
+		"remove": "Remove",
 		"save": "Save"
 	},
 	"app": {

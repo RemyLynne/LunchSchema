@@ -9,6 +9,7 @@ export const lunchOptionSchema = z.object({
   newBilling: billingDefinitionSchema.nullish(),
   currentAvailableDays: z.array(z.number().min(0).max(6)),
   newAvailableDays: z.array(z.number().min(0).max(6)),
+  removalDate: z.iso.date().nullish(),
 })
 
 export type LunchOption = z.infer<typeof lunchOptionSchema>
