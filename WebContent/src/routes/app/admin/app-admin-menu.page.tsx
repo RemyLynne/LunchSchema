@@ -60,81 +60,83 @@ function MenuList() {
   const menu = useMenu()
 
   return (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead className="w-1/5">{t("lunch:category.label")}</TableHead>
-          <TableHead className="w-1/5">{t("lunch:billing.price.current")}</TableHead>
-          <TableHead className="w-1/5">{t("lunch:billing.price.planned")}</TableHead>
-          <TableHead className="w-1/5">{t("lunch:availability.label")}</TableHead>
-          <TableHead className="w-1/5 text-end">{t("common:actions.action")}</TableHead>
-        </TableRow>
-      </TableHeader>
-      {menu.data != null && (
-        <TableBody>
-          {menu.data.map(option => (
-            <TableRow
-              key={option.id}
-              className="relative cursor-pointer focus-within:bg-muted/50 has-[a:focus-visible]:outline has-[a:focus-visible]:outline-2 has-[a:focus-visible]:outline-ring"
-            >
-              <TableCell>
-                <Popup
-                  trigger={<button type="button" className="text-left font-medium outline-none after:absolute after:inset-0 after:content-['']">{translateText(option.name)}</button>}
-                  title={t("lunch:menu.choice.edit")}
-                  description={t("lunch:menu.choice.description.edit")}
-                >
-                  {close => (
-                    <MenuAdminPopup
-                      close={close}
-                      option={option}
-                    />
+    <div className="rounded-xl border">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead className="w-1/5">{t("lunch:category.label")}</TableHead>
+            <TableHead className="w-1/5">{t("lunch:billing.price.current")}</TableHead>
+            <TableHead className="w-1/5">{t("lunch:billing.price.planned")}</TableHead>
+            <TableHead className="w-1/5">{t("lunch:availability.label")}</TableHead>
+            <TableHead className="w-1/5 text-end">{t("common:actions.action")}</TableHead>
+          </TableRow>
+        </TableHeader>
+        {menu.data != null && (
+          <TableBody>
+            {menu.data.map(option => (
+              <TableRow
+                key={option.id}
+                className="relative cursor-pointer focus-within:bg-muted/50 has-[a:focus-visible]:outline has-[a:focus-visible]:outline-2 has-[a:focus-visible]:outline-ring"
+              >
+                <TableCell>
+                  <Popup
+                    trigger={<button type="button" className="text-left font-medium outline-none after:absolute after:inset-0 after:content-['']">{translateText(option.name)}</button>}
+                    title={t("lunch:menu.choice.edit")}
+                    description={t("lunch:menu.choice.description.edit")}
+                  >
+                    {close => (
+                      <MenuAdminPopup
+                        close={close}
+                        option={option}
+                      />
+                    )}
+                  </Popup>
+                </TableCell>
+                <TableCell>
+                  {option.currentBilling && (
+                    <>
+                      <p>{option.currentBilling.price} kr</p>
+                      <p className="text-muted-foreground">
+                        {t(`lunch:billing.each.${option.currentBilling.billingPeriod}`)}
+                      </p>
+                    </>
                   )}
-                </Popup>
-              </TableCell>
-              <TableCell>
-                {option.currentBilling && (
-                  <>
-                    <p>{option.currentBilling.price} kr</p>
-                    <p className="text-muted-foreground">
-                      {t(`lunch:billing.each.${option.currentBilling.billingPeriod}`)}
-                    </p>
-                  </>
-                )}
-              </TableCell>
-              <TableCell>
-                {option.removalDate == null && option.newBilling && (
-                  <>
-                    <p>{option.newBilling.price} kr</p>
-                    <p className="text-muted-foreground">
-                      {t(`lunch:billing.each.${option.newBilling.billingPeriod}`)}
-                    </p>
-                  </>
-                )}
-              </TableCell>
-              <TableCell>
-                <div className="flex flex-col gap-2">
-                  <div className="flex gap-1">
-                    <p className="text-muted-foreground pe-1">{t("lunch:availability.current")}</p>
-                    {option.currentAvailableDays.sort().map(day => (
-                      <Badge key={day} variant="secondary">{t(`common:day.${day}.short`)}</Badge>
-                    ))}
+                </TableCell>
+                <TableCell>
+                  {option.removalDate == null && option.newBilling && (
+                    <>
+                      <p>{option.newBilling.price} kr</p>
+                      <p className="text-muted-foreground">
+                        {t(`lunch:billing.each.${option.newBilling.billingPeriod}`)}
+                      </p>
+                    </>
+                  )}
+                </TableCell>
+                <TableCell>
+                  <div className="flex flex-col gap-2">
+                    <div className="flex gap-1">
+                      <p className="text-muted-foreground pe-1">{t("lunch:availability.current")}</p>
+                      {option.currentAvailableDays.sort().map(day => (
+                        <Badge key={day} variant="secondary">{t(`common:day.${day}.short`)}</Badge>
+                      ))}
+                    </div>
+                    <div className="flex gap-1">
+                      <p className="text-muted-foreground pe-1">{t("lunch:availability.planned")}</p>
+                      {option.removalDate == null && option.newAvailableDays.sort().map(day => (
+                        <Badge key={day} variant="secondary">{t(`common:day.${day}.short`)}</Badge>
+                      ))}
+                    </div>
                   </div>
-                  <div className="flex gap-1">
-                    <p className="text-muted-foreground pe-1">{t("lunch:availability.planned")}</p>
-                    {option.removalDate == null && option.newAvailableDays.sort().map(day => (
-                      <Badge key={day} variant="secondary">{t(`common:day.${day}.short`)}</Badge>
-                    ))}
-                  </div>
-                </div>
-              </TableCell>
-              <TableCell className="text-end">
-                <Button variant="outline">{t("common:actions.edit")}</Button>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      )}
-    </Table>
+                </TableCell>
+                <TableCell className="text-end">
+                  <Button variant="outline">{t("common:actions.edit")}</Button>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        )}
+      </Table>
+    </div>
   )
 }
 

@@ -105,89 +105,91 @@ function UserTable() {
   }, [])
 
   return (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead>{t("auth:fields.name.label")}</TableHead>
-          <TableHead>{t("auth:fields.email.label")}</TableHead>
-          <TableHead>{t("auth:fields.role.label")}</TableHead>
-          <TableHead>{t("auth:user.status.label")}</TableHead>
-          <TableHead className="text-end">{t("common:actions.action")}</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {users.map((user) => (
-          <TableRow
-            key={user.id}
-            className="relative cursor-pointer focus-within:bg-muted/50 has-[a:focus-visible]:outline has-[a:focus-visible]:outline-2 has-[a:focus-visible]:outline-ring"
-          >
-            <TableCell>
-              <Popup
-                trigger={<button type="button" className="text-left font-medium outline-none after:absolute after:inset-0 after:content-['']">{user.name}</button>}
-                title={t("auth:user.edit")}
-              >
-                {close => (
-                  <UserAdminPopup
-                    close={close}
-                    user={user}
-                    setUser={replaceUser}
-                  />
+    <div className="rounded-xl border">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>{t("auth:fields.name.label")}</TableHead>
+            <TableHead>{t("auth:fields.email.label")}</TableHead>
+            <TableHead>{t("auth:fields.role.label")}</TableHead>
+            <TableHead>{t("auth:user.status.label")}</TableHead>
+            <TableHead className="text-end">{t("common:actions.action")}</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {users.map((user) => (
+            <TableRow
+              key={user.id}
+              className="relative cursor-pointer focus-within:bg-muted/50 has-[a:focus-visible]:outline has-[a:focus-visible]:outline-2 has-[a:focus-visible]:outline-ring"
+            >
+              <TableCell>
+                <Popup
+                  trigger={<button type="button" className="text-left font-medium outline-none after:absolute after:inset-0 after:content-['']">{user.name}</button>}
+                  title={t("auth:user.edit")}
+                >
+                  {close => (
+                    <UserAdminPopup
+                      close={close}
+                      user={user}
+                      setUser={replaceUser}
+                    />
+                  )}
+                </Popup>
+              </TableCell>
+              <TableCell>{user.email}</TableCell>
+              <TableCell>
+                <RoleList roles={user.roles}/>
+              </TableCell>
+              <TableCell>
+                {user.disabled ? (
+                  <Badge variant="secondary" className="text-muted-foreground">{t("auth:user.status.disabled")}</Badge>
+                ) : (
+                  <Badge variant="success">{t("auth:user.status.enabled")}</Badge>
                 )}
-              </Popup>
-            </TableCell>
-            <TableCell>{user.email}</TableCell>
-            <TableCell>
-              <RoleList roles={user.roles}/>
-            </TableCell>
-            <TableCell>
-              {user.disabled ? (
-                <Badge variant="secondary" className="text-muted-foreground">{t("auth:user.status.disabled")}</Badge>
-              ) : (
-                <Badge variant="success">{t("auth:user.status.enabled")}</Badge>
-              )}
-            </TableCell>
-            <TableCell className="text-end">
-              <Button variant="outline">{t("common:actions.edit")}</Button>
+              </TableCell>
+              <TableCell className="text-end">
+                <Button variant="outline">{t("common:actions.edit")}</Button>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+        <TableFooter>
+          <TableRow>
+            <TableCell colSpan={5}>
+              <div className="flex justify-between items-center">
+                <div>
+                  <BasicPagination min={1} max={totalPages} value={page} setValue={setPage}/>
+                </div>
+                <div>
+                  <Field orientation="horizontal">
+                    <FieldLabel
+                      htmlFor="select-rows-per-page"
+                      className="sr-only sm:not-sr-only"
+                    >
+                      {t("common:pagination.rowsPerPage")}
+                    </FieldLabel>
+                    <Select
+                      value={rowsPerPage}
+                      onValueChange={val => val != null && setRowsPerPage(val)}>
+                      <SelectTrigger className="w-20" id="select-rows-per-page">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent align="start">
+                        <SelectGroup>
+                          {PAGE_SIZES.map(size => (
+                            <SelectItem key={size} value={size}>{size}</SelectItem>
+                          ))}
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
+                  </Field>
+                </div>
+              </div>
             </TableCell>
           </TableRow>
-        ))}
-      </TableBody>
-      <TableFooter>
-        <TableRow>
-          <TableCell colSpan={5}>
-            <div className="flex justify-between items-center">
-              <div>
-                <BasicPagination min={1} max={totalPages} value={page} setValue={setPage}/>
-              </div>
-              <div>
-                <Field orientation="horizontal">
-                  <FieldLabel
-                    htmlFor="select-rows-per-page"
-                    className="sr-only sm:not-sr-only"
-                  >
-                    {t("common:pagination.rowsPerPage")}
-                  </FieldLabel>
-                  <Select
-                    value={rowsPerPage}
-                    onValueChange={val => val != null && setRowsPerPage(val)}>
-                    <SelectTrigger className="w-20" id="select-rows-per-page">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent align="start">
-                      <SelectGroup>
-                        {PAGE_SIZES.map(size => (
-                          <SelectItem key={size} value={size}>{size}</SelectItem>
-                        ))}
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
-                </Field>
-              </div>
-            </div>
-          </TableCell>
-        </TableRow>
-      </TableFooter>
-    </Table>
+        </TableFooter>
+      </Table>
+    </div>
   )
 }
 
