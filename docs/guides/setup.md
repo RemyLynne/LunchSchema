@@ -7,6 +7,10 @@
 - `.env` file, containing connection info to the database (see [.env.template](../../.env.template))
 - Http access to the server (default port 8080, can be changed by `server.port` in `.env`)
 
+## Running
+
+No prebuilt binaries are available, so building from source is the only way (see [building](./building.md))
+
 ## Create initial user
 
 The system does not implement self-registration, and so requires that each user is registered manually
