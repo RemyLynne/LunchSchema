@@ -9,6 +9,7 @@
 		"edit": "Rediger",
 		"reactivate": "Reaktiver",
 		"remove": "Fjern",
+		"reset": "Nullstill",
 		"save": "Lagre"
 	},
 	"app": {
@@ -41,7 +42,50 @@
 		"network": "Nettverksfeil",
 		"unknown": "Ukjent feil"
 	},
+	"month": [
+		{
+			"name": "Januar"
+		},
+		{
+			"name": "Februar"
+		},
+		{
+			"name": "Mars"
+		},
+		{
+			"name": "April"
+		},
+		{
+			"name": "Mai"
+		},
+		{
+			"name": "Juni"
+		},
+		{
+			"name": "Juli"
+		},
+		{
+			"name": "August"
+		},
+		{
+			"name": "September"
+		},
+		{
+			"name": "Oktober"
+		},
+		{
+			"name": "November"
+		},
+		{
+			"name": "Desember"
+		}
+	],
 	"pagination": {
 		"rowsPerPage": "Rader per side"
+	},
+	"status": {
+		"disabled": "Inaktiv",
+		"enabled": "Aktiv",
+		"label": "Status"
 	}
 }

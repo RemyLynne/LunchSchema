@@ -10,7 +10,16 @@
 			"month": "Each month"
 		},
 		"period": {
-			"fieldLabel": "Billing period"
+			"activeRange": "Active period: {{first}}. $t(common:month.{{month}}.name) - {{last}}. $t(common:month.{{month}}.name) {{year}}",
+			"current": {
+				"activeRangeDescription": "Days outside this period is not visible",
+				"label": "Current period - $t(common:month.{{month}}.name) {{year}}"
+			},
+			"fieldLabel": "Billing period",
+			"next": {
+				"activeRangeDescription": "Days outside this period is not available for selection",
+				"label": "Next period - $t(common:month.{{month}}.name) {{year}}"
+			}
 		},
 		"price": {
 			"current": "Current price",
@@ -46,6 +55,20 @@
 		"title": "Menu"
 	},
 	"myChoices": {
+		"edit": {
+			"allowed": "Open for edit",
+			"deadline": {
+				"passed": {
+					"description": "Changes for $t(common:month.{{nextMonth}}.name) can no longer be registered. The next period is locked and can only be modified by administrators",
+					"title": "The deadline for changes has passed"
+				},
+				"upcomming": {
+					"description": "Changes for the next period ($t(common:month.{{nextMonth}}.name)) must be registered by {{deadline}}. $t(common:month.{{currentMonth}}.name) New selections take effect on {{firstOfNextMonth}}. $t(common:month.{{nextMonth}}.name)",
+					"title": "Deadline for changes for the next period"
+				}
+			},
+			"locked": "Locked"
+		},
 		"label": "My choices"
 	},
 	"overview": {
@@ -53,5 +76,17 @@
 		"week": {
 			"label": "Weekly overview"
 		}
+	},
+	"price": {
+		"every": {
+			"day": "{{price}} {{unit}}/day",
+			"month": "{{price}} {{unit}}/month"
+		},
+		"short": "{{price}} {{unit}}"
+	},
+	"priceEstimate": {
+		"calculatedForMonth": "Monthly calculated price for $t(common:month.{{month}}.name)",
+		"forMonth": "Estimated price for $t(common:month.{{month}}.name)",
+		"price": "Ca. {{price}} {{unit}}"
 	}
 }

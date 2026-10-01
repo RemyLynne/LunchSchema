@@ -14,7 +14,8 @@ export function getInitials(name = ""): string {
 }
 
 // Returns a new array with item toggled in the array (removed/addedd)
-export function toggled<T>(array: T[], item: T): T[] {
+export function toggled<T>(array: T[]|null|undefined, item: T): T[] {
+  if (array == null) return [item]
   return array.includes(item)
     ? array.filter(i => i !== item)
     : [...array, item]

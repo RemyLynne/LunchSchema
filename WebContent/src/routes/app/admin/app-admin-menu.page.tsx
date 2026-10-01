@@ -13,7 +13,12 @@ import {permissionConstants} from "@/security/permission.constants"
 import {Popup} from "@/components/popup"
 import {Field, FieldDescription, FieldError, FieldGroup, FieldLabel} from "@/components/ui/field"
 import {Input} from "@/components/ui/input"
-import {billingDefinitionSchema, type BillingPeriod, billingPeriodSchema} from "@/models/lunch/billing-definition"
+import {
+  billingDefinitionSchema,
+  type BillingPeriod,
+  billingPeriodSchema,
+  weekDays
+} from "@/models/lunch/billing-definition"
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select"
 import {I18nInput} from "@/components/i18n-input"
 import {Controller, type SubmitHandler, useForm} from "react-hook-form"
@@ -95,7 +100,7 @@ function MenuList() {
                 <TableCell>
                   {option.currentBilling && (
                     <>
-                      <p>{option.currentBilling.price} kr</p>
+                      <p>{t("lunch:price.short", {price: option.currentBilling.price, unit: "kr"})}</p>
                       <p className="text-muted-foreground">
                         {t(`lunch:billing.each.${option.currentBilling.billingPeriod}`)}
                       </p>
@@ -105,7 +110,7 @@ function MenuList() {
                 <TableCell>
                   {option.removalDate == null && option.newBilling && (
                     <>
-                      <p>{option.newBilling.price} kr</p>
+                      <p>{t("lunch:price.short", {price: option.newBilling.price, unit: "kr"})}</p>
                       <p className="text-muted-foreground">
                         {t(`lunch:billing.each.${option.newBilling.billingPeriod}`)}
                       </p>
@@ -140,8 +145,6 @@ function MenuList() {
   )
 }
 
-const days = [0,1,2,3,4]
-
 function WeekOverview() {
   const { t } = useTranslation()
   const menu = useMenu()
@@ -153,7 +156,7 @@ function WeekOverview() {
       </CardHeader>
       <CardContent>
         <div className="flex flex-col md:flex-row gap-4">
-          {days.map(day => (
+          {weekDays.map(day => (
             <Card key={day} className="grow bg-muted dark:bg-muted/50">
               <CardHeader>
                 <CardTitle>{t(`common:day.${day}.name`)}</CardTitle>
@@ -238,7 +241,7 @@ function MenuAdminPopup({option, close}: MenuAdminPopupProps) {
         price: 0,
         billingPeriod: "day"
       },
-      availableDays: option?.newAvailableDays ?? days,
+      availableDays: option?.newAvailableDays ?? weekDays,
     }
   })
 
@@ -260,8 +263,6 @@ function MenuAdminPopup({option, close}: MenuAdminPopupProps) {
     replaceMenuItem(parsed.data)
     close()
   }
-
-
 
   const remove = useCallback(async () => {
     const res = await api.post(`/api/menu/${option!.id}/remove`, {})
@@ -387,7 +388,7 @@ function MenuAdminPopup({option, close}: MenuAdminPopupProps) {
             <Field data-invalid={fieldState.invalid}>
               <FieldLabel>{t("lunch:availability.label")}</FieldLabel>
               <div className="flex gap-2">
-                {days.map(day => (
+                {weekDays.map(day => (
                   <Button
                     key={day}
                     className="grow"

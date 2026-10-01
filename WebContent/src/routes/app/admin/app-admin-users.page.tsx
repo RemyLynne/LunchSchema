@@ -112,7 +112,7 @@ function UserTable() {
             <TableHead>{t("auth:fields.name.label")}</TableHead>
             <TableHead>{t("auth:fields.email.label")}</TableHead>
             <TableHead>{t("auth:fields.role.label")}</TableHead>
-            <TableHead>{t("auth:user.status.label")}</TableHead>
+            <TableHead>{t("common:status.label")}</TableHead>
             <TableHead className="text-end">{t("common:actions.action")}</TableHead>
           </TableRow>
         </TableHeader>
@@ -142,9 +142,9 @@ function UserTable() {
               </TableCell>
               <TableCell>
                 {user.disabled ? (
-                  <Badge variant="secondary" className="text-muted-foreground">{t("auth:user.status.disabled")}</Badge>
+                  <Badge variant="secondary" className="text-muted-foreground">{t("common:status.disabled")}</Badge>
                 ) : (
-                  <Badge variant="success">{t("auth:user.status.enabled")}</Badge>
+                  <Badge variant="success">{t("common:status.enabled")}</Badge>
                 )}
               </TableCell>
               <TableCell className="text-end">

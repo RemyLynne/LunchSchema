@@ -12,4 +12,8 @@ export const billingDefinitionSchema = z.object({
   billingPeriod: billingPeriodSchema,
 })
 
+export const weekDays = [0,1,2,3,4]
+
+export const allowedEditsUntilDayOfMonth = 20
+
 export type BillingDefinition = z.infer<typeof billingDefinitionSchema>

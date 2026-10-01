@@ -10,7 +10,16 @@
 			"month": "Per måned"
 		},
 		"period": {
-			"fieldLabel": "Faktureringsperiode"
+			"activeRange": "Aktiv periode: {{first}}. $t(common:month.{{month}}.name) - {{last}}. $t(common:month.{{month}}.name) {{year}}",
+			"current": {
+				"activeRangeDescription": "Dager utenfor denne perioden er ikke synlig",
+				"label": "Inneværende periode - $t(common:month.{{month}}.name) {{year}}"
+			},
+			"fieldLabel": "Faktureringsperiode",
+			"next": {
+				"activeRangeDescription": "Dager utenfor denne perioden er ikke tilgjengelige for valg",
+				"label": "Neste periode - $t(common:month.{{month}}.name) {{year}}"
+			}
 		},
 		"price": {
 			"current": "Nåværende pris",
@@ -46,6 +55,20 @@
 		"title": "Meny"
 	},
 	"myChoices": {
+		"edit": {
+			"allowed": "Åpen for endring",
+			"deadline": {
+				"passed": {
+					"description": "Endringer for $t(common:month.{{nextMonth}}.name) kan ikke lenger registreres. Neste periode er låst og kan kun bli endret av administratorer",
+					"title": "Endringsfrist er passert"
+				},
+				"upcomming": {
+					"description": "Endringer for neste periode ($t(common:month.{{nextMonth}}.name)) må registreres innen {{deadline}}. $t(common:month.{{currentMonth}}.name). Nye valg trer i kraft {{firstOfNextMonth}}. $t(common:month.{{nextMonth}}.name)",
+					"title": "Endringsfrist for neste periode"
+				}
+			},
+			"locked": "Låst"
+		},
 		"label": "Mine valg"
 	},
 	"overview": {
@@ -53,5 +76,17 @@
 		"week": {
 			"label": "Ukesoversikt"
 		}
+	},
+	"price": {
+		"every": {
+			"day": "{{price}} {{unit}}/dag",
+			"month": "{{price}} {{unit}}/måned"
+		},
+		"short": "{{price}} {{unit}}"
+	},
+	"priceEstimate": {
+		"calculatedForMonth": "Månedlig kalkulert kostnad for $t(common:month.{{month}}.name)",
+		"forMonth": "Estimert pris for $t(common:month.{{month}}.name)",
+		"price": "Ca. {{price}} {{unit}}"
 	}
 }
