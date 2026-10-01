@@ -80,7 +80,7 @@ class MenuController(
         }
 
         val now = LocalDate.now()
-        option.endDate = now.plusMonths(1).withDayOfMonth(1)
+        option.endDate = now.withDayOfMonth(now.lengthOfMonth())
         lunchOptionRepository.save(option)
 
         return ResponseEntity.status(HttpStatus.OK).body(null)
