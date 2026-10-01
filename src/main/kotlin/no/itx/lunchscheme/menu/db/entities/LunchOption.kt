@@ -39,7 +39,7 @@ class LunchOption (
     var availabilities: MutableSet<LunchAvailability> = mutableSetOf()
         protected set
 
-    override fun toDto() = toDto(LocalDate.now())
+    override fun toDto() = toDto(LocalDate.now().withDayOfMonth(1))
 
     fun toDto(date: LocalDate): LunchOptionResponseDto {
         val currentBilling = billings.filter { it.isWithin(date) }.maxByOrNull { it.startDate }
@@ -66,16 +66,16 @@ class LunchOption (
     }
 
     fun setNewBilling(price: Int, billingPeriod: LunchBilling.BillingPeriod) {
-        val now = LocalDate.now()
+        val month = LocalDate.now().withDayOfMonth(1)
 
         //end or reopen current billing
         var shouldContinueCurrent = false
         billings
-            .filter(nowAndFutureFilter(now))
-            .filter { it.startDate.isBefore(now) || it.startDate.isEqual(now) }
+            .filter(nowAndFutureFilter(month))
+            .filter { it.startDate.isBefore(month) || it.startDate.isEqual(month) }
             .forEach {
                 it.endDate = if (it.price != price || it.billingPeriod != billingPeriod)
-                    now.withDayOfMonth(now.lengthOfMonth())
+                    month.withDayOfMonth(month.lengthOfMonth())
                 else {
                     shouldContinueCurrent = shouldContinueCurrent || it.endDate != null
                     null
@@ -84,14 +84,14 @@ class LunchOption (
 
         //remove future billings, as to continue using the current
         if (shouldContinueCurrent) {
-            billings.removeIf { it.startDate.isAfter(now) }
+            billings.removeIf { it.startDate.isAfter(month) }
             return
         }
 
         //update any future billings
         var useUpdated = false
         billings
-            .filter { it.startDate.isAfter(now) }
+            .filter { it.startDate.isAfter(month) }
             .forEach {
                 it.endDate = null
                 it.price = price
@@ -106,34 +106,34 @@ class LunchOption (
             this,
             price,
             billingPeriod,
-            now.plusMonths(1).withDayOfMonth(1),
+            month.plusMonths(1),
             null
         ))
     }
 
     fun setNewAvailabilities(newAvailabilities: Set<DayOfWeek>) {
-        val now = LocalDate.now()
+        val month = LocalDate.now().withDayOfMonth(1)
 
         //end or reopen current availabilities
         availabilities
-            .filter(nowAndFutureFilter(now))
-            .filter { (it.startDate.isBefore(now) || it.startDate.isEqual(now)) }
+            .filter(nowAndFutureFilter(month))
+            .filter { (it.startDate.isBefore(month) || it.startDate.isEqual(month)) }
             .forEach {
                 it.endDate = if (!newAvailabilities.contains(it.day))
-                    now.withDayOfMonth(now.lengthOfMonth())
+                    month.withDayOfMonth(month.lengthOfMonth())
                 else null
             }
 
         //remove future availabilities that no longer exist
-        availabilities.removeIf { it.startDate.isAfter(now) && !newAvailabilities.contains(it.day) }
+        availabilities.removeIf { it.startDate.isAfter(month) && !newAvailabilities.contains(it.day) }
 
         //add future availabilities that are added
-        newAvailabilities.filter { availability -> !availabilities.filter(nowAndFutureFilter(now)).any { availability == it.day } }
+        newAvailabilities.filter { availability -> !availabilities.filter(nowAndFutureFilter(month)).any { availability == it.day } }
             .forEach {
                 availabilities.add(LunchAvailability(
                     this,
                     it,
-                    now.plusMonths(1).withDayOfMonth(1),
+                    month.plusMonths(1),
                     null
                 ))
             }

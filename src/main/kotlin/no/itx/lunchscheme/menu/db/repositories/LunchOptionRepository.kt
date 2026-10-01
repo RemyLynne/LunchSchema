@@ -14,7 +14,7 @@ interface LunchOptionRepository : JpaRepository<LunchOption, Int> {
     @Query("""
         SELECT o FROM LunchOption o
         WHERE o.id = :id
-          AND (o.endDate IS NULL OR o.endDate >= :date)
+            AND (o.endDate IS NULL OR o.endDate >= :date)
     """)
     fun findByIdAndEndDateMaybeAfter(id: Int, date: LocalDate): Optional<LunchOption>
 }

@@ -1,7 +1,7 @@
 import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card"
 import {Badge} from "@/components/ui/badge"
 import {Table, TableBody, TableCell, TableRow} from "@/components/ui/table"
-import {Field, FieldGroup, FieldLabel} from "@/components/ui/field"
+import {Field, FieldError, FieldGroup, FieldLabel} from "@/components/ui/field"
 import {Checkbox} from "@/components/ui/checkbox"
 import {Button} from "@/components/ui/button"
 import {Alert, AlertDescription, AlertTitle} from "@/components/ui/alert"
@@ -13,13 +13,17 @@ import {useTranslation} from "react-i18next"
 import {useEffect, useMemo, useState} from "react"
 import {countWeekdayInMonth, getMonthBounds} from "@/lib/date-utils"
 import {useQuery} from "@tanstack/react-query"
-import type {userChoices} from "@/models/lunch/user-choices"
+import {type userChoices, userChoicesSchema} from "@/models/lunch/user-choices"
 import {type LunchChoice} from "@/models/lunch/lunch-choice"
 import {queryClient} from "@/lib/query-client"
 import {Controller, type SubmitHandler, useForm} from "react-hook-form"
 import {zodResolver} from "@hookform/resolvers/zod"
 import {z} from "zod"
 import {toggled} from "@/lib/utils"
+import {api, isApiError} from "@/lib/api"
+import {ToastManager} from "@/lib/toast"
+import {getAppText} from "@/lib/app-text"
+import {t} from "i18next"
 
 export default function AppMyChoicesPage() {
   const { t } = useTranslation()
@@ -29,7 +33,7 @@ export default function AppMyChoicesPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <h1 className="text-3xl font-semibold">{t("lunch:myChoices.label")} <Badge>No edit</Badge></h1>
+      <h1 className="text-3xl font-semibold">{t("lunch:myChoices.label")}</h1>
       <Alert className="items-center" variant={canEdit ? "info" : "destructive"}>
         <InfoIcon className="mb-2"/>
         <AlertTitle>{t(canEdit ? "lunch:myChoices.edit.deadline.upcomming.title" : "lunch:myChoices.edit.deadline.upcomming.title")}</AlertTitle>
@@ -113,7 +117,7 @@ function CurrentPeriod() {
   )
 }
 
-const schema = z.record(z.string(), z.number().array()) // ke y has to be string because object
+const schema = z.record(z.string(), z.number().array()) // key has to be string because object
 
 type FormValues = z.infer<typeof schema>
 
@@ -126,14 +130,29 @@ function NextPeriod() {
 
   const canEdit = useMemo(() => new Date().getDate() <= allowedEditsUntilDayOfMonth, [])
 
-  const { control: formControl, handleSubmit, formState: { isValid }, reset, resetDefaultValues } = useForm({
+  const { control: formControl, handleSubmit, setError, formState: { errors, isValid }, reset, resetDefaultValues } = useForm({
     resolver: zodResolver(schema),
     mode: "onChange",
     defaultValues: {}
   })
 
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
-    console.log(data)
+    const items = Object.entries(data).map(([day, optionIds]) => optionIds.map(optionId => ({day: Number(day), optionId}))).flat()
+
+    const res = await api.post("/api/my-choices", items)
+
+    if (isApiError(res)) {
+      if (res.error) setError("root", { message: getAppText(res.error, t)})
+      return
+    }
+
+    const parsed = userChoicesSchema.safeParse(await res.response.json().catch(() => null))
+    if (!parsed.success) {
+      console.error(parsed.error)
+      setError("root", { message: t("common:errors.unknown") })
+    }
+
+    queryClient.setQueryData(["myChoices"], parsed.data)
   }
 
   useEffect(() => {
@@ -141,7 +160,7 @@ function NextPeriod() {
 
     const calculate = async () => {
       if (userChoices.data == null) return setCost(0)
-      const constInternal = await getCost(userChoices.data.newChoices)
+      const constInternal = await getCost(userChoices.data.newChoices, true)
       if (!controller.signal.aborted) setCost(constInternal)
     }
     void calculate()
@@ -158,6 +177,7 @@ function NextPeriod() {
       const options = (map[choice.day]??=[])
       if (!options.includes(choice.optionId)) options.push(choice.optionId)
     }
+    weekDays.forEach(day => map[day]??=[]) //fixes a validity bug due to controlled fields not having any value
 
     resetDefaultValues(map)
     reset()
@@ -180,6 +200,7 @@ function NextPeriod() {
           <AlertDescription>{t("lunch:billing.period.next.activeRangeDescription")}</AlertDescription>
         </Alert>
         <form className="flex flex-col gap-6" onSubmit={handleSubmit(onSubmit)}>
+          {errors.root?.message && <FieldError className="mb-2">{t(errors.root.message)}</FieldError>}
           <Table className="border-transparent!">
             <TableBody>
               {weekDays.map(day => (
@@ -285,20 +306,28 @@ function useMyChoices() {
 }
 
 async function fetchMyChoices(): Promise<userChoices | null> {
-  return Promise.resolve({
-    currentChoices: [
-      { optionId: 1, day: 0 },
-      { optionId: 1, day: 1 },
-      { optionId: 1, day: 2 },
-      { optionId: 3, day: 2 },
-      { optionId: 1, day: 3 },
-    ],
-    newChoices: [
-      { optionId: 1, day: 0 },
-      { optionId: 1, day: 1 },
-      { optionId: 1, day: 2 },
-      { optionId: 1, day: 3 },
-      { optionId: 1, day: 4 },
-    ]
-  })
+  const res = await api.get("/api/my-choices")
+
+  if (res.code === 401 || res.code === 403) return null
+
+  if (isApiError(res)) {
+    if (res.error)
+      ToastManager.add({
+        type: "error",
+        title: getAppText(res.error, t)
+      })
+    return null
+  }
+
+  const parsed = userChoicesSchema.safeParse(await res.response.json().catch(() => null))
+  if (!parsed.success) {
+    console.error(parsed.error)
+    ToastManager.add({
+      type: "error",
+      title: t("common:errors.unknown"),
+    })
+    return null
+  }
+
+  return parsed.data
 }

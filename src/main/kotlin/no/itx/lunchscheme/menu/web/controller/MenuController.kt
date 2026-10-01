@@ -33,12 +33,12 @@ class MenuController(
     @GetMapping
     @PreAuthorize("isAuthenticated()")
     fun getMenu(): ResponseEntity<List<LunchOptionResponseDto>> {
-        val now = LocalDate.now()
+        val month = LocalDate.now().withDayOfMonth(1)
 
-        val options = lunchOptionRepository.findByEndDateIsNullOrEndDateAfter(now.minusDays(1))
+        val options = lunchOptionRepository.findByEndDateIsNullOrEndDateAfter(month.minusDays(1))
             .filter { option ->
-                (option.billings.any { it.isWithin(now) } || option.billings.any { it.isWithin(now.plusMonths(1)) }) &&
-                (option.availabilities.any { it.isWithin(now) } || option.availabilities.any { it.isWithin(now.plusMonths(1)) })
+                (option.billings.any { it.isWithin(month) } || option.billings.any { it.isWithin(month.plusMonths(1)) }) &&
+                (option.availabilities.any { it.isWithin(month) } || option.availabilities.any { it.isWithin(month.plusMonths(1)) })
             }
 
         return ResponseEntity.ok(options.map(LunchOption::toDto))
