@@ -170,7 +170,8 @@ function UserTable() {
                     </FieldLabel>
                     <Select
                       value={rowsPerPage}
-                      onValueChange={val => val != null && setRowsPerPage(val)}>
+                      onValueChange={val => val != null && setRowsPerPage(val)}
+                    >
                       <SelectTrigger className="w-20" id="select-rows-per-page">
                         <SelectValue />
                       </SelectTrigger>
