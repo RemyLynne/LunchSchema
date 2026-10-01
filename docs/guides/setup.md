@@ -18,8 +18,8 @@ The system does not implement self-registration, and so requires that each user 
 After running the SQL bellow, navigate to `/register` as to set your password and log in
 
 ```sql
-SET @email = '<email>'; -- Replace with your email
-SET @name = '<name>'; -- Replace with your name
+SET @email = :email; -- Replace with your email
+SET @name = :name; -- Replace with your name
 INSERT INTO users (email, name)
 VALUES (@email, @name);
 ```
@@ -31,7 +31,7 @@ As there currently is no admin user, you have to manually make yourself the admi
 The SQL bellow should should give yourself the admin role
 
 ```sql
-SET @email = '<email>'; -- Replace with your email
+SET @email = :email; -- Replace with your email
 INSERT INTO users_roles (user_id, role_id)
 SELECT u.id, r.id
 FROM users u CROSS JOIN roles r
