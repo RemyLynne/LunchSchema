@@ -67,12 +67,17 @@
 					"title": "Deadline for changes for the next period"
 				}
 			},
+			"label": "Edit choices",
 			"locked": "Locked"
 		},
 		"label": "My choices"
 	},
 	"overview": {
 		"label": "Overview",
+		"period": {
+			"activeUsers": "Active users in the period",
+			"current": "Current period ($t(common:month.{{month}}.name) {{year}})"
+		},
 		"week": {
 			"label": "Weekly overview"
 		}
@@ -82,6 +87,7 @@
 			"day": "{{price}} {{unit}}/day",
 			"month": "{{price}} {{unit}}/month"
 		},
+		"label": "Cost",
 		"short": "{{price}} {{unit}}"
 	},
 	"priceEstimate": {

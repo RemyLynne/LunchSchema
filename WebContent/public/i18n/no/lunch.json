@@ -67,12 +67,17 @@
 					"title": "Endringsfrist for neste periode"
 				}
 			},
+			"label": "Rediger valg",
 			"locked": "Låst"
 		},
 		"label": "Mine valg"
 	},
 	"overview": {
 		"label": "Oversikt",
+		"period": {
+			"activeUsers": "Aktive brukere i perioden",
+			"current": "Gjeldende periode ($t(common:month.{{month}}.name) {{year}})"
+		},
 		"week": {
 			"label": "Ukesoversikt"
 		}
@@ -82,6 +87,7 @@
 			"day": "{{price}} {{unit}}/dag",
 			"month": "{{price}} {{unit}}/måned"
 		},
+		"label": "Kostnad",
 		"short": "{{price}} {{unit}}"
 	},
 	"priceEstimate": {

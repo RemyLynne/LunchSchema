@@ -87,5 +87,8 @@
 		"disabled": "Inaktiv",
 		"enabled": "Aktiv",
 		"label": "Status"
+	},
+	"week": {
+		"withRange": "Uke {{week}} ({{startDate}}. $t(common:month.{{startMonth}}.name) - {{endDate}}. $t(common:month.{{endMonth}}.name))"
 	}
 }
