@@ -5,7 +5,7 @@ import {Field, FieldError, FieldGroup, FieldLabel} from "@/components/ui/field"
 import {Checkbox} from "@/components/ui/checkbox"
 import {Button} from "@/components/ui/button"
 import {Alert, AlertDescription, AlertTitle} from "@/components/ui/alert"
-import {InfoIcon} from "lucide-react"
+import {Info} from "lucide-react"
 import {menuQuery, useMenu} from "@/hooks/use-menu"
 import {allowedEditsUntilDayOfMonth, weekDays} from "@/models/lunch/billing-definition"
 import {translateText} from "@/models/i18n/text"
@@ -35,7 +35,7 @@ export default function AppMyChoicesPage() {
     <div className="flex flex-col gap-6">
       <h1 className="text-3xl font-semibold">{t("lunch:myChoices.label")}</h1>
       <Alert className="items-center" variant={canEdit ? "info" : "destructive"}>
-        <InfoIcon className="mb-2"/>
+        <Info className="mb-2"/>
         <AlertTitle>{t(canEdit ? "lunch:myChoices.edit.deadline.upcomming.title" : "lunch:myChoices.edit.deadline.upcomming.title")}</AlertTitle>
         <AlertDescription>
           {t(canEdit ? "lunch:myChoices.edit.deadline.upcomming.description" : "lunch:myChoices.edit.deadline.passed.description", {currentMonth, nextMonth, deadline: allowedEditsUntilDayOfMonth, firstOfNextMonth})}
@@ -77,7 +77,7 @@ function CurrentPeriod() {
       </CardHeader>
       <CardContent className="flex flex-col gap-6">
         <Alert className="items-center" variant="info">
-          <InfoIcon className="mb-2"/>
+          <Info className="mb-2"/>
           <AlertTitle>{t("lunch:billing.period.activeRange", {first: firstOfMonth, last: lastOfMonth, month, year})}</AlertTitle>
           <AlertDescription>{t("lunch:billing.period.current.activeRangeDescription")}</AlertDescription>
         </Alert>
@@ -195,7 +195,7 @@ function NextPeriod() {
       </CardHeader>
       <CardContent className="flex flex-col gap-6">
         <Alert className="items-center" variant={canEdit ? "info" : "destructive"}>
-          <InfoIcon className="mb-2"/>
+          <Info className="mb-2"/>
           <AlertTitle>{t("lunch:billing.period.activeRange", {first: firstOfMonth, last: lastOfMonth, month, year})}</AlertTitle>
           <AlertDescription>{t("lunch:billing.period.next.activeRangeDescription")}</AlertDescription>
         </Alert>
