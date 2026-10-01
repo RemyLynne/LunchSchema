@@ -65,7 +65,7 @@ function MenuList() {
   const menu = useMenu()
 
   return (
-    <div className="rounded-xl border">
+    <div className="rounded-xl border overflow-hidden">
       <Table>
         <TableHeader>
           <TableRow>

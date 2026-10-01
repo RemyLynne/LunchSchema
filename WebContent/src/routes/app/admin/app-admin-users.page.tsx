@@ -105,7 +105,7 @@ function UserTable() {
   }, [])
 
   return (
-    <div className="rounded-xl border">
+    <div className="rounded-xl border overflow-hidden">
       <Table>
         <TableHeader>
           <TableRow>
