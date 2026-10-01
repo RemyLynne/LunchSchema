@@ -59,7 +59,7 @@
 			"allowed": "Åpen for endring",
 			"deadline": {
 				"passed": {
-					"description": "Endringer for $t(common:month.{{nextMonth}}.name) kan ikke lenger registreres. Neste periode er låst og kan kun bli endret av administratorer",
+					"description": "Endringer for $t(common:month.{{nextMonth}}.name) kan ikke lenger registreres. Neste periode er låst.",
 					"title": "Endringsfrist er passert"
 				},
 				"upcomming": {

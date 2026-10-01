@@ -59,7 +59,7 @@
 			"allowed": "Open for edit",
 			"deadline": {
 				"passed": {
-					"description": "Changes for $t(common:month.{{nextMonth}}.name) can no longer be registered. The next period is locked and can only be modified by administrators",
+					"description": "Changes for $t(common:month.{{nextMonth}}.name) can no longer be registered. The next period is locked.",
 					"title": "The deadline for changes has passed"
 				},
 				"upcomming": {
