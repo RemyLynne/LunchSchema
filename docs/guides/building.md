@@ -1,5 +1,3 @@
-<!--TODO: justfile-->
-
 # Building
 
 Building of the application is done in two steps, frontend then backend
